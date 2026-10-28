@@ -1,0 +1,51 @@
+.benefits {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+
+    border-top: 1px solid #eadfd8;
+    border-bottom: 1px solid #eadfd8;
+}
+
+.benefit {
+    display: flex;
+    gap: 15px;
+
+    padding: 26px 5%;
+
+    border-right: 1px solid #eadfd8;
+}
+
+.benefit:last-child {
+    border-right: none;
+}
+
+.benefit > span {
+    font-size: 22px;
+}
+
+.benefit strong {
+    display: block;
+
+    margin-bottom: 5px;
+
+    font-size: 14px;
+}
+
+.benefit p {
+    margin: 0;
+
+    color: #7c6c63;
+
+    font-size: 12px;
+}
+
+@media (max-width: 760px) {
+    .benefits {
+        grid-template-columns: 1fr;
+    }
+
+    .benefit {
+        border-right: none;
+        border-bottom: 1px solid #eadfd8;
+    }
+}

@@ -1,0 +1,148 @@
+.hero-section {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    min-height: 570px;
+}
+
+.hero-content {
+    padding: 90px 8%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    background:
+        radial-gradient(
+            circle at 15% 20%,
+            rgba(229, 185, 190, 0.24),
+            transparent 32%
+        ),
+        linear-gradient(135deg, #f7eee8, #fffaf7);
+}
+
+.section-eyebrow {
+    margin-bottom: 20px;
+
+    color: #8c4a54;
+
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+
+    text-transform: uppercase;
+}
+
+.hero-content h1 {
+    max-width: 680px;
+
+    color: #2f3d35;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(45px, 6vw, 78px);
+    font-weight: 400;
+    line-height: 0.98;
+}
+
+.hero-content p {
+    max-width: 570px;
+
+    margin: 25px 0 32px;
+
+    color: #74655c;
+
+    font-size: 17px;
+    line-height: 1.75;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.primary-button,
+.secondary-button {
+    padding: 12px 20px;
+
+    border-radius: 999px;
+
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+.primary-button {
+    border: none;
+
+    background-color: #29483a;
+    color: white;
+}
+
+.secondary-button {
+    border: 1px solid #b8aaa0;
+
+    background: transparent;
+    color: #29483a;
+}
+
+.hero-image {
+    position: relative;
+
+    min-height: 440px;
+
+    background:
+        linear-gradient(
+            rgba(41, 72, 58, 0.08),
+            rgba(41, 72, 58, 0.08)
+        ),
+        url("https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1400&q=85");
+
+    background-position: center;
+    background-size: cover;
+}
+
+.hero-note {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+
+    max-width: 245px;
+
+    padding: 15px 17px;
+
+    border-radius: 14px;
+
+    background: rgba(255, 250, 247, 0.92);
+
+    font-size: 12px;
+}
+
+.hero-note strong,
+.hero-note span {
+    display: block;
+}
+
+.hero-note span {
+    margin-top: 4px;
+    color: #74655c;
+}
+
+@media (max-width: 960px) {
+    .hero-section {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-image {
+        min-height: 430px;
+    }
+}
+
+@media (max-width: 600px) {
+    .hero-content {
+        padding: 55px 20px;
+    }
+
+    .hero-image {
+        min-height: 350px;
+    }
+}
