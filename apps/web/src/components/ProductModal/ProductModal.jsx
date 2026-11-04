@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { openSoldOutOrder } from "../../utils/whatsapp";
 
 import "./ProductModal.css";
 
@@ -82,7 +83,9 @@ export default function ProductModal({
 
                 <div className="product-modal-content">
                     <span className="product-modal-category">
-                        {product.category.name}
+                        {!product.isAvailable && (
+                            <span className="product-badge sold-out">Esgotado</span>
+                        )}
                     </span>
 
                     <h2>{product.name}</h2>
@@ -128,13 +131,23 @@ export default function ProductModal({
                         </div>
                     </div>
 
-                    <button
-                        className="product-modal-add"
-                        type="button"
-                        onClick={handleAddProduct}
-                    >
-                        Adicionar ao carrinho
-                    </button>
+                    {product.isAvailable ? (
+                        <button
+                            className="product-modal-add"
+                            type="button"
+                            onClick={handleAddProduct}
+                        >
+                            Adicionar ao carrinho
+                        </button>
+                    ) : (
+                        <button
+                            className="product-modal-add"
+                            type="button"
+                            onClick={() => openSoldOutOrder(product.name)}
+                        >
+                            Encomendar pelo WhatsApp
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

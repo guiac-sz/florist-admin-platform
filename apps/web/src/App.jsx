@@ -33,6 +33,10 @@ export default function App() {
     }
 
     function handleAddToCart(product, quantity) {
+
+        if (!product.isAvailable) {
+            return;
+        }
         setCartItems((currentItems) => {
             const existingItem = currentItems.find(
                 (item) => item.id === product.id
