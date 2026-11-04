@@ -75,14 +75,14 @@ export default function ProductModal({
 
                 <div className="product-modal-image">
                     <img
-                        src={product.image}
+                        src={product.imageUrl}
                         alt={product.name}
                     />
                 </div>
 
                 <div className="product-modal-content">
                     <span className="product-modal-category">
-                        {product.categoryLabel}
+                        {product.category.name}
                     </span>
 
                     <h2>{product.name}</h2>

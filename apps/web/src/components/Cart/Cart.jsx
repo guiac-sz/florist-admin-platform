@@ -142,7 +142,7 @@ export default function Cart({
                                         key={item.id}
                                     >
                                         <img
-                                            src={item.image}
+                                            src={item.imageUrl}
                                             alt={item.name}
                                         />
 
