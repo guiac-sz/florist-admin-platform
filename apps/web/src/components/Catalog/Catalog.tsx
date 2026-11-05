@@ -13,17 +13,26 @@ interface CatalogProps {
     onAddToCart: (product: Product, quantity: number) => void;
 }
 
+interface ProductsResult {
+    key: string;
+    products: Product[];
+    error: string | null;
+}
+
 export default function Catalog({
     onOpenProduct,
     onAddToCart
 }: CatalogProps) {
     const [categories, setCategories] = useState<Category[]>([]);
-    const [products, setProducts] = useState<Product[]>([]);
     const [category, setCategory] = useState(ALL_CATEGORIES);
     const [search, setSearch] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState("");
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [result, setResult] = useState<ProductsResult | null>(null);
+
+    const requestKey = `${category}|${debouncedSearch}`;
+    const isLoading = result?.key !== requestKey;
+    const products = result?.products ?? [];
+    const error = isLoading ? null : (result?.error ?? null);
 
     useEffect(() => {
         getCategories()
@@ -42,31 +51,29 @@ export default function Catalog({
     useEffect(() => {
         let ignore = false;
 
-        setIsLoading(true);
-        setError(null);
-
         getProducts({
             category: category === ALL_CATEGORIES ? undefined : category,
             search: debouncedSearch || undefined
         })
             .then((data) => {
-                if (!ignore) setProducts(data);
+                if (!ignore) {
+                    setResult({ key: requestKey, products: data, error: null });
+                }
             })
             .catch(() => {
                 if (!ignore) {
-                    setError(
-                        "Não foi possível carregar os produtos. Tente novamente em instantes."
-                    );
+                    setResult({
+                        key: requestKey,
+                        products: [],
+                        error: "Não foi possível carregar os produtos. Tente novamente em instantes."
+                    });
                 }
-            })
-            .finally(() => {
-                if (!ignore) setIsLoading(false);
             });
 
         return () => {
             ignore = true;
         };
-    }, [category, debouncedSearch]);
+    }, [category, debouncedSearch, requestKey]);
 
     function renderContent() {
         if (error) {
