@@ -1,6 +1,10 @@
 import "./Hero.css";
 
-export default function Hero({ onWhatsApp }) {
+interface HeroProps {
+    onWhatsApp: () => void;
+}
+
+export default function Hero({ onWhatsApp }: HeroProps) {
     return (
         <section className="hero-section" id="inicio">
             <div className="hero-content">

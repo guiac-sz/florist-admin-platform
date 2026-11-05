@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
 import { storeConfig } from "../../config/storeConfig";
+import { openWhatsApp } from "../../utils/whatsapp";
 import "./Header.css";
+
+interface HeaderProps {
+    cartItemCount: number;
+    onOpenCart: () => void;
+}
 
 export default function Header({
     cartItemCount,
     onOpenCart
-}) {
+}: HeaderProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [activeSection, setActiveSection] = useState("inicio");
 
@@ -53,21 +59,14 @@ export default function Header({
     }, []);
 
     function handleWhatsApp() {
-        const message = encodeURIComponent(
-            "Olá! Vim pelo site e gostaria de fazer um pedido."
-        );
-
-        window.open(
-            `https://wa.me/${storeConfig.whatsapp}?text=${message}`,
-            "_blank"
-        );
+       openWhatsApp("Olá! Vim pelo site e gostaria de fazer um pedido.");
     }
 
     function closeMenu() {
         setIsMenuOpen(false);
     }
 
-    function getLinkClass(section) {
+    function getLinkClass(section: string) {
         return activeSection === section ? "active" : "";
     }
 

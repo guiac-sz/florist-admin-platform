@@ -1,6 +1,10 @@
 import "./About.css";
 
-export default function About({ onWhatsApp }) {
+interface AboutProps {
+    onWhatsApp: () => void;
+}
+
+export default function About({ onWhatsApp }: AboutProps) {
     return (
         <section className="about-section" id="sobre">
             <div className="about-image" />

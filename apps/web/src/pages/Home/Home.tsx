@@ -6,11 +6,20 @@ import Location from "../../components/Location/Location";
 import Contact from "../../components/Contact/Contact";
 import Footer from "../../components/Footer/Footer";
 
+import type { Product } from "../../types/catalog";
+
+interface HomeProps {
+    onWhatsApp: () => void;
+    onOpenProduct: (product: Product) => void;
+    onAddToCart: (product: Product, quantity: number) => void;
+}
+
+
 export default function Home({
     onWhatsApp,
     onOpenProduct,
     onAddToCart
-}) {
+}: HomeProps) {
     return (
         <>
             <main>
