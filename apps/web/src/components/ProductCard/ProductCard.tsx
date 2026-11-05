@@ -1,5 +1,6 @@
 import type { Product } from "../../types/catalog";
 import { openSoldOutOrder } from "../../utils/whatsapp";
+import { formatPrice } from "../../utils/format";
 
 interface ProductCardProps {
     product: Product;
@@ -30,10 +31,7 @@ export default function ProductCard({
 }: ProductCardProps) {
     const isSoldOut = !product.isAvailable;
 
-    const formattedPrice = product.price.toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL"
-    });
+    const formattedPrice = formatPrice(product.price);
 
     return (
         <article className={`product-card ${isSoldOut ? "is-sold-out" : ""}`}>
