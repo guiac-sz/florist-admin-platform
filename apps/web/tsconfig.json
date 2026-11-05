@@ -9,7 +9,6 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "allowJs": true,
     "isolatedModules": true,
     "noEmit": true,
     "skipLibCheck": true
