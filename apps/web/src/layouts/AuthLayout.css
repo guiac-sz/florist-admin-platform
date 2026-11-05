@@ -5,30 +5,70 @@
     background-color: #fffaf7;
 }
 
-/* Painel da esquerda */
+/* Painel da esquerda: fotos passando */
 
 .auth-aside {
+    position: relative;
+    overflow: hidden;
+
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     padding: 48px;
-}
 
-.auth-aside.rose {
     background-color: #e8d2d2;
 }
 
-.auth-aside.lilac {
-    background-color: #e7d9e1;
+.auth-slides {
+    position: absolute;
+    inset: 0;
+}
+
+.auth-slides::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        180deg,
+        rgba(32, 57, 46, 0.45) 0%,
+        rgba(32, 57, 46, 0) 30%,
+        rgba(32, 57, 46, 0) 60%,
+        rgba(32, 57, 46, 0.55) 100%
+    );
+}
+
+.auth-slide {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+
+    opacity: 0;
+    transform: scale(1.08);
+
+    transition:
+        opacity 1.2s ease,
+        transform 6s ease-out;
+}
+
+.auth-slide.active {
+    opacity: 1;
+    transform: scale(1);
 }
 
 .auth-brand {
+    position: relative;
+    z-index: 1;
+
     display: inline-flex;
     align-items: center;
     align-self: flex-start;
     gap: 10px;
 
-    color: #332823;
+    color: #ffffff;
     font-family: Georgia, "Times New Roman", serif;
     font-size: 22px;
     text-decoration: none;
@@ -42,13 +82,50 @@
     width: 38px;
     height: 38px;
 
-    border: 1px solid #332823;
+    border: 1px solid rgba(255, 255, 255, 0.85);
     border-radius: 50%;
 }
 
-.auth-aside-flower {
-    align-self: center;
-    color: rgba(255, 255, 255, 0.8);
+.auth-aside-footer {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.auth-dots {
+    display: flex;
+    gap: 8px;
+}
+
+.auth-dot {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+
+    border: none;
+    border-radius: 999px;
+
+    background-color: rgba(255, 255, 255, 0.55);
+
+    transition:
+        width 0.3s,
+        background-color 0.3s;
+}
+
+.auth-dot.active {
+    width: 24px;
+    background-color: #ffffff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .auth-slide,
+    .auth-slide.active {
+        transform: none;
+        transition: opacity 0.01s;
+    }
 }
 
 .auth-quote {
