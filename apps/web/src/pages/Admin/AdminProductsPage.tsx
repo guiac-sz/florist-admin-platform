@@ -1,25 +1,34 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router";
+import {
+    closestCenter,
+    DndContext,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    type DragEndEvent,
+    type Modifier
+} from "@dnd-kit/core";
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    verticalListSortingStrategy
+} from "@dnd-kit/sortable";
 
 import DeleteProductDialog from "../../components/DeleteProductDialog/DeleteProductDialog";
 import FormAlert from "../../components/Form/FormAlert";
-import Switch from "../../components/Form/Switch";
-import {
-    CheckIcon,
-    PencilIcon,
-    PlusIcon,
-    SearchIcon,
-    StarIcon,
-    TrashIcon
-} from "../../components/Icons/Icons";
+import { CheckIcon, PlusIcon, SearchIcon } from "../../components/Icons/Icons";
 import { useAuth } from "../../hooks/useAuth";
 import {
     deleteAdminProduct,
     getAdminProducts,
+    reorderAdminProducts,
     updateAdminProduct
 } from "../../services/admin";
 import type { AdminProduct } from "../../types/admin";
-import { formatPrice, formatRelativeDate } from "../../utils/format";
+import AdminProductRow from "./AdminProductRow";
 
 import "./AdminProductsPage.css";
 
@@ -33,9 +42,21 @@ const FILTERS: { value: Filter; label: string }[] = [
     { value: "sold-out", label: "Esgotados" }
 ];
 
+// Separa as letras dos acentos ("é" vira "e" + "´") e remove os acentos,
+// para que "orquidea" encontre "Orquídea".
 function normalize(text: string) {
-    return text.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+    return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
+
+// As linhas só andam na vertical: zeramos o deslocamento horizontal.
+const restrictToVerticalAxis: Modifier = ({ transform }) => ({ ...transform, x: 0 });
+
+// Mensagens que o leitor de tela anuncia durante o arraste (o padrão é em inglês).
+const screenReaderInstructions = {
+    draggable:
+        "Para mover um produto, pressione espaço ou enter. Use as setas para cima e para baixo " +
+        "e pressione espaço ou enter de novo para soltar. Esc cancela."
+};
 
 function matchesFilter(product: AdminProduct, filter: Filter) {
     if (filter === "visible") return product.isVisible;
@@ -57,6 +78,13 @@ export default function AdminProductsPage() {
     const [productToDelete, setProductToDelete] = useState<AdminProduct | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [deleteError, setDeleteError] = useState<string | null>(null);
+
+    // O mouse só começa a arrastar depois de mover 4px, assim um clique simples
+    // na alça não vira arraste. O teclado também funciona (acessibilidade).
+    const sensors = useSensors(
+        useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+        useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    );
 
     useEffect(() => {
         if (!token) {
@@ -129,6 +157,28 @@ export default function AdminProductsPage() {
         }
     }
 
+    async function handleDragEnd({ active, over }: DragEndEvent) {
+        if (!token || !products || !over || active.id === over.id) {
+            return;
+        }
+
+        const oldIndex = products.findIndex((item) => item.id === active.id);
+        const newIndex = products.findIndex((item) => item.id === over.id);
+        const reordered = arrayMove(products, oldIndex, newIndex);
+
+        setActionError(null);
+
+        // Mesma ideia do destaque: muda na tela e, se a API falhar, desfaz.
+        setProducts(reordered);
+
+        try {
+            await reorderAdminProducts(token, reordered.map((item) => item.id));
+        } catch {
+            setProducts(products);
+            setActionError("Não foi possível salvar a nova ordem da vitrine. Tente de novo.");
+        }
+    }
+
     function closeDeleteDialog() {
         setProductToDelete(null);
         setDeleteError(null);
@@ -142,6 +192,10 @@ export default function AdminProductsPage() {
             matchesFilter(product, filter) &&
             normalize(`${product.name} ${product.category.name}`).includes(searchTerm)
     );
+
+    // Só dá para reordenar vendo a lista completa: com filtro ou busca,
+    // "soltar entre dois produtos" não teria um significado claro.
+    const canReorder = filter === "all" && searchTerm === "";
 
     const soldOutCount = allProducts.filter((p) => !p.isAvailable).length;
 
@@ -171,102 +225,55 @@ export default function AdminProductsPage() {
 
         return (
             <div className="admin-table-card">
-                <table className="admin-table">
-                    <thead>
-                        <tr>
-                            <th>Produto</th>
-                            <th>Categoria</th>
-                            <th>Preço</th>
-                            <th>Disponibilidade</th>
-                            <th>Destaque</th>
-                            <th>Na vitrine</th>
-                            <th>
-                                <span className="visually-hidden">Ações</span>
-                            </th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {visibleProducts.map((product) => (
-                            <tr
-                                key={product.id}
-                                className={product.isVisible ? "" : "is-hidden"}
-                            >
-                                <td>
-                                    <div className="admin-product">
-                                        <img src={product.imageUrl} alt="" />
-
-                                        <div>
-                                            <strong>{product.name}</strong>
-                                            <small>
-                                                Atualizado {formatRelativeDate(product.updatedAt)}
-                                            </small>
-                                        </div>
-                                    </div>
-                                </td>
-
-                                <td>{product.category.name}</td>
-
-                                <td className="admin-price">{formatPrice(product.price)}</td>
-
-                                <td>
-                                    {product.isAvailable ? (
-                                        <span className="admin-badge available">Disponível</span>
-                                    ) : (
-                                        <span className="admin-badge sold-out">Esgotado</span>
-                                    )}
-                                </td>
-
-                                <td>
-                                    <button
-                                        type="button"
-                                        className={`admin-star ${product.isFeatured ? "on" : ""}`}
-                                        onClick={() => handleToggle(product, "isFeatured")}
-                                        aria-pressed={product.isFeatured}
-                                        aria-label={`Destacar ${product.name}`}
-                                        title={product.isFeatured ? "Tirar do destaque" : "Destacar"}
-                                    >
-                                        <StarIcon size={16} />
-                                    </button>
-                                </td>
-
-                                <td>
-                                    <Switch
-                                        checked={product.isVisible}
-                                        onChange={() => handleToggle(product, "isVisible")}
-                                        label={`Mostrar ${product.name} na loja`}
-                                    />
-                                </td>
-
-                                <td>
-                                    <div className="admin-row-actions">
-                                        <Link
-                                            to={`/admin/produtos/${product.id}`}
-                                            className="admin-icon-button"
-                                            aria-label={`Editar ${product.name}`}
-                                            title="Editar"
-                                        >
-                                            <PencilIcon size={17} />
-                                        </Link>
-
-                                        <button
-                                            type="button"
-                                            className="admin-icon-button danger"
-                                            onClick={() => setProductToDelete(product)}
-                                            aria-label={`Excluir ${product.name}`}
-                                            title="Excluir"
-                                        >
-                                            <TrashIcon size={17} />
-                                        </button>
-                                    </div>
-                                </td>
+                <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    modifiers={[restrictToVerticalAxis]}
+                    accessibility={{ screenReaderInstructions }}
+                    onDragEnd={handleDragEnd}
+                >
+                    <table className="admin-table">
+                        <thead>
+                            <tr>
+                                <th className="admin-drag-cell">
+                                    <span className="visually-hidden">Ordem</span>
+                                </th>
+                                <th>Produto</th>
+                                <th>Categoria</th>
+                                <th>Preço</th>
+                                <th>Disponibilidade</th>
+                                <th>Destaque</th>
+                                <th>Na vitrine</th>
+                                <th>
+                                    <span className="visually-hidden">Ações</span>
+                                </th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+
+                        <SortableContext
+                            items={visibleProducts.map((product) => product.id)}
+                            strategy={verticalListSortingStrategy}
+                        >
+                            <tbody>
+                                {visibleProducts.map((product) => (
+                                    <AdminProductRow
+                                        key={product.id}
+                                        product={product}
+                                        canReorder={canReorder}
+                                        onToggle={handleToggle}
+                                        onDelete={setProductToDelete}
+                                    />
+                                ))}
+                            </tbody>
+                        </SortableContext>
+                    </table>
+                </DndContext>
 
                 <p className="admin-table-footer">
-                    Mostrando {visibleProducts.length} de {allProducts.length} produtos
+                    Mostrando {visibleProducts.length} de {allProducts.length} produtos ·{" "}
+                    {canReorder
+                        ? "arraste pela alça para mudar a ordem da vitrine"
+                        : "limpe a busca e os filtros para reordenar"}
                 </p>
             </div>
         );

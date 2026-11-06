@@ -290,6 +290,56 @@
     background-color: #fbeceb;
 }
 
+.admin-table .admin-drag-cell {
+    width: 44px;
+    padding-right: 0;
+    padding-left: 10px;
+}
+
+.admin-drag-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 30px;
+    height: 34px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: transparent;
+    color: #a3958c;
+
+    cursor: grab;
+    touch-action: none;
+
+    transition:
+        background-color 0.2s,
+        color 0.2s;
+}
+
+.admin-drag-handle:hover:not(:disabled) {
+    background-color: #f0e5dd;
+    color: #2f3d35;
+}
+
+.admin-drag-handle:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.admin-table tr.is-dragging {
+    position: relative;
+    z-index: 1;
+
+    background-color: #ffffff;
+    box-shadow: 0 10px 28px rgba(47, 61, 53, 0.18);
+}
+
+.admin-table tr.is-dragging .admin-drag-handle {
+    cursor: grabbing;
+}
+
 .admin-notice {
     margin-bottom: 20px;
 }

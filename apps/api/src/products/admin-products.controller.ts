@@ -8,11 +8,13 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Put,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AdminOnly } from '../auth/decorators/admin-only.decorator';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { ReorderProductsDto } from './dto/reorder-products.dto';
 import { ProductsService } from './products.service';
 
 @ApiTags('Administração · Produtos')
@@ -25,6 +27,13 @@ export class AdminProductsController {
   @Get()
   findAll() {
     return this.productsService.findAllForAdmin();
+  }
+
+  /** Salva a nova ordem da vitrine */
+  @Put('order')
+  @HttpCode(204)
+  reorder(@Body() dto: ReorderProductsDto) {
+    return this.productsService.reorder(dto);
   }
 
   /** Um produto, mesmo escondido */

@@ -236,3 +236,26 @@ export function PlusIcon(props: IconProps) {
         </BaseIcon>
     );
 }
+
+export function GripIcon(props: IconProps) {
+    return (
+        <BaseIcon {...props}>
+            <circle cx="9" cy="6" r="1" />
+            <circle cx="15" cy="6" r="1" />
+            <circle cx="9" cy="12" r="1" />
+            <circle cx="15" cy="12" r="1" />
+            <circle cx="9" cy="18" r="1" />
+            <circle cx="15" cy="18" r="1" />
+        </BaseIcon>
+    );
+}
+
+export function UploadIcon(props: IconProps) {
+    return (
+        <BaseIcon {...props}>
+            <path d="M12 15V3" />
+            <path d="m7 8 5-5 5 5" />
+            <path d="M20 15v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4" />
+        </BaseIcon>
+    );
+}

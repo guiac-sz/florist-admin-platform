@@ -3,3 +3,6 @@ dist/
 .env
 *.tsbuildinfo
 apps/api/src/generated/
+
+# Fotos enviadas pelo painel (ficam só na máquina, não vão pro GitHub)
+apps/api/uploads/

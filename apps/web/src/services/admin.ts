@@ -48,3 +48,24 @@ export async function updateAdminProduct(
 export function deleteAdminProduct(token: string, id: number) {
     return request<void>(`/admin/products/${id}`, { method: "DELETE", token });
 }
+
+export function reorderAdminProducts(token: string, ids: number[]) {
+    return request<void>("/admin/products/order", {
+        method: "PUT",
+        body: { ids },
+        token
+    });
+}
+
+export async function uploadProductImage(token: string, file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const { url } = await request<{ url: string }>("/admin/uploads", {
+        method: "POST",
+        body: formData,
+        token
+    });
+
+    return url;
+}

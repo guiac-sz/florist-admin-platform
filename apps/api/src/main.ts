@@ -1,13 +1,18 @@
 import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
+import { UPLOADS_DIR } from './uploads/uploads.constants';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.setGlobalPrefix('api');
+
+  // Fotos enviadas pelo painel: http://localhost:3000/uploads/<arquivo>
+  app.useStaticAssets(UPLOADS_DIR, { prefix: '/uploads/' });
 
   app.useGlobalPipes(
     new ValidationPipe({

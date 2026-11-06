@@ -24,7 +24,7 @@ export class ApiError extends Error {
 }
 
 interface RequestOptions {
-    method?: "GET" | "POST" | "PATCH" | "DELETE";
+    method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
     body?: unknown;
     token?: string | null;
 }
@@ -34,8 +34,11 @@ export async function request<T>(
     { method = "GET", body, token }: RequestOptions = {}
 ): Promise<T> {
     const headers: Record<string, string> = {};
+    const isFormData = body instanceof FormData;
 
-    if (body !== undefined) {
+    // Arquivos (FormData) vão do jeito que estão: o navegador monta o
+    // cabeçalho multipart sozinho. O resto vai como JSON.
+    if (body !== undefined && !isFormData) {
         headers["Content-Type"] = "application/json";
     }
 
@@ -46,7 +49,7 @@ export async function request<T>(
     const response = await fetch(`${API_URL}${path}`, {
         method,
         headers,
-        body: body !== undefined ? JSON.stringify(body) : undefined
+        body: body === undefined ? undefined : isFormData ? body : JSON.stringify(body)
     });
 
     if (!response.ok) {

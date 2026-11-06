@@ -7,6 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { ListProductsQueryDto } from './dto/list-products-query.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { ReorderProductsDto } from './dto/reorder-products.dto';
 
 const productInclude = {
   category: {
@@ -107,6 +108,25 @@ export class ProductsService {
       data: dto,
       include: productInclude,
     });
+  }
+
+  async reorder({ ids }: ReorderProductsDto) {
+    const count = await this.prisma.product.count({
+      where: { id: { in: ids } },
+    });
+
+    if (count !== ids.length) {
+      throw new BadRequestException('A lista tem produtos que não existem.');
+    }
+
+    // SQL direto (com parâmetros) para mudar só a ordem, sem mexer na
+    // data de "atualizado em" de todos os produtos.
+    await this.prisma.$transaction(
+      ids.map(
+        (id, index) =>
+          this.prisma.$executeRaw`UPDATE "products" SET "sortOrder" = ${index + 1} WHERE "id" = ${id}`,
+      ),
+    );
   }
 
   async remove(id: number) {

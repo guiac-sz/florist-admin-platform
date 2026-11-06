@@ -122,3 +122,53 @@
 .product-preview .product-card {
     margin: 0;
 }
+
+.photo-dropzone {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+
+    padding: 20px;
+
+    border: 1px dashed #d9cbc2;
+    border-radius: 12px;
+
+    color: #776960;
+    text-align: center;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s,
+        background-color 0.2s;
+}
+
+.photo-dropzone:hover,
+.photo-dropzone.is-dragging {
+    border-color: #8c4a54;
+    background-color: #fbf4f2;
+}
+
+.photo-dropzone:focus-within {
+    border-color: #29483a;
+    box-shadow: 0 0 0 3px rgba(41, 72, 58, 0.15);
+}
+
+.photo-dropzone input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.photo-dropzone strong {
+    color: #8c4a54;
+    font-size: 15px;
+}
+
+.photo-dropzone small {
+    font-size: 12px;
+}

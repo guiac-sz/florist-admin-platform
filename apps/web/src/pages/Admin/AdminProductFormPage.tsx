@@ -8,14 +8,20 @@ import SelectField from "../../components/Form/SelectField";
 import TextAreaField from "../../components/Form/TextAreaField";
 import FormAlert from "../../components/Form/FormAlert";
 import Switch from "../../components/Form/Switch";
-import { ArrowLeftIcon, FlowerIcon, TrashIcon } from "../../components/Icons/Icons";
+import {
+    ArrowLeftIcon,
+    FlowerIcon,
+    TrashIcon,
+    UploadIcon
+} from "../../components/Icons/Icons";
 import { useAuth } from "../../hooks/useAuth";
 import { ApiError, getCategories } from "../../services/api";
 import {
     createAdminProduct,
     deleteAdminProduct,
     getAdminProduct,
-    updateAdminProduct
+    updateAdminProduct,
+    uploadProductImage
 } from "../../services/admin";
 import type { AdminProductInput } from "../../types/admin";
 import type { Category, Product } from "../../types/catalog";
@@ -36,6 +42,9 @@ interface ProductForm {
 }
 
 type FormErrors = Partial<Record<"name" | "description" | "price" | "imageUrl" | "categoryId", string>>;
+
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 const emptyForm: ProductForm = {
     name: "",
@@ -65,7 +74,7 @@ function validate(form: ProductForm): FormErrors {
     if (form.priceCents <= 0) errors.price = "Informe o preço.";
     if (!form.description.trim()) errors.description = "Escreva uma descrição.";
     if (!isValidUrl(form.imageUrl.trim())) {
-        errors.imageUrl = "Cole um endereço de imagem que comece com https://";
+        errors.imageUrl = "Envie uma foto ou cole um endereço que comece com https://";
     }
 
     return errors;
@@ -89,6 +98,9 @@ export default function AdminProductFormPage() {
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [deleteError, setDeleteError] = useState<string | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
+    const [uploadError, setUploadError] = useState<string | null>(null);
+    const [isDragging, setIsDragging] = useState(false);
 
     useEffect(() => {
         getCategories()
@@ -139,6 +151,41 @@ export default function AdminProductFormPage() {
 
         const errorKey = field === "priceCents" ? "price" : field;
         setErrors((current) => ({ ...current, [errorKey]: undefined }));
+    }
+
+    async function handleUpload(file: File) {
+        if (!token) {
+            return;
+        }
+
+        // Confere antes de enviar, para dar a resposta na hora.
+        if (!IMAGE_TYPES.includes(file.type)) {
+            setUploadError("Envie uma imagem JPG, PNG ou WEBP.");
+            return;
+        }
+
+        if (file.size > MAX_IMAGE_SIZE) {
+            setUploadError("A foto passa de 5 MB. Escolha uma menor.");
+            return;
+        }
+
+        setIsUploading(true);
+        setUploadError(null);
+
+        try {
+            const url = await uploadProductImage(token, file);
+            updateField("imageUrl", url);
+        } catch (error) {
+            setUploadError(
+                error instanceof ApiError && error.status === 413
+                    ? "A foto passa de 5 MB. Escolha uma menor."
+                    : error instanceof ApiError
+                      ? error.message
+                      : "Não foi possível enviar a foto. Tente novamente."
+            );
+        } finally {
+            setIsUploading(false);
+        }
     }
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -257,7 +304,7 @@ export default function AdminProductFormPage() {
                         type="submit"
                         form="product-form"
                         className="admin-button primary"
-                        disabled={isSaving}
+                        disabled={isSaving || isUploading}
                     >
                         {isSaving
                             ? "Salvando..."
@@ -285,8 +332,56 @@ export default function AdminProductFormPage() {
                             </div>
 
                             <div className="product-photo-field">
+                                <label
+                                    className={`photo-dropzone ${isDragging ? "is-dragging" : ""}`}
+                                    onDragOver={(event) => {
+                                        event.preventDefault();
+                                        setIsDragging(true);
+                                    }}
+                                    onDragLeave={() => setIsDragging(false)}
+                                    onDrop={(event) => {
+                                        event.preventDefault();
+                                        setIsDragging(false);
+
+                                        const file = event.dataTransfer.files[0];
+                                        if (file) void handleUpload(file);
+                                    }}
+                                >
+                                    <input
+                                        type="file"
+                                        accept="image/jpeg,image/png,image/webp"
+                                        disabled={isUploading}
+                                        onChange={(event) => {
+                                            const file = event.target.files?.[0];
+                                            if (file) void handleUpload(file);
+                                            event.target.value = "";
+                                        }}
+                                    />
+
+                                    <UploadIcon size={20} />
+
+                                    <strong>
+                                        {isUploading
+                                            ? "Enviando foto..."
+                                            : form.imageUrl
+                                              ? "Trocar foto"
+                                              : "Enviar foto"}
+                                    </strong>
+
+                                    <small>
+                                        Clique ou arraste aqui. JPG, PNG ou WEBP, até 5 MB.
+                                        Formato vertical (4:5) fica melhor.
+                                    </small>
+                                </label>
+
+                                {uploadError && (
+                                    <p className="field-error" role="alert">
+                                        {uploadError}
+                                    </p>
+                                )}
+
                                 <TextField
-                                    label="Endereço da foto"
+                                    label="Ou cole o endereço da foto"
                                     name="imageUrl"
                                     type="url"
                                     placeholder="https://..."
@@ -294,11 +389,6 @@ export default function AdminProductFormPage() {
                                     error={errors.imageUrl}
                                     onChange={(event) => updateField("imageUrl", event.target.value)}
                                 />
-
-                                <p className="field-hint">
-                                    Formato vertical (4:5) fica melhor. O envio de arquivos do
-                                    computador chega numa próxima etapa.
-                                </p>
                             </div>
                         </div>
 
