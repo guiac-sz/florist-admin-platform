@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Outlet } from "react-router";
 
+import AdminBar from "../components/AdminBar/AdminBar";
 import Header from "../components/Header/Header";
 import ProductModal from "../components/ProductModal/ProductModal";
 import Cart from "../components/Cart/Cart";
 import WhatsAppFloat from "../components/WhatsAppFloat/WhatsAppFloat";
 
+import { useAuth } from "../hooks/useAuth";
 import type { Product } from "../types/catalog";
 import type { CartItem } from "../types/cart";
 import { formatPrice } from "../utils/format";
@@ -15,12 +17,40 @@ export interface StoreOutletContext {
     onWhatsApp: () => void;
     onOpenProduct: (product: Product) => void;
     onAddToCart: (product: Product, quantity: number) => void;
+    isAdminEditing: boolean;
+}
+
+// Guarda só nesta aba se a administração escolheu "Ver como cliente".
+const CUSTOMER_VIEW_KEY = "florist.customerView";
+
+function readCustomerView() {
+    try {
+        return sessionStorage.getItem(CUSTOMER_VIEW_KEY) === "true";
+    } catch {
+        return false;
+    }
 }
 
 export default function StoreLayout() {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const [isCustomerView, setIsCustomerView] = useState(readCustomerView);
+
+    const { user } = useAuth();
+    const isAdmin = user?.role === "ADMIN";
+    const isAdminEditing = isAdmin && !isCustomerView;
+
+    function toggleCustomerView() {
+        const next = !isCustomerView;
+        setIsCustomerView(next);
+
+        try {
+            sessionStorage.setItem(CUSTOMER_VIEW_KEY, String(next));
+        } catch {
+            // Sem acesso ao armazenamento: a escolha vale só até recarregar.
+        }
+    }
 
     const cartItemCount = cartItems.reduce(
         (total, item) => total + item.quantity,
@@ -110,6 +140,10 @@ Poderia confirmar a disponibilidade?`
 
     return (
         <>
+            {isAdmin && (
+                <AdminBar isEditing={isAdminEditing} onToggleEditing={toggleCustomerView} />
+            )}
+
             <Header
                 cartItemCount={cartItemCount}
                 onOpenCart={() => setIsCartOpen(true)}
@@ -119,7 +153,8 @@ Poderia confirmar a disponibilidade?`
                 context={{
                     onWhatsApp: handleWhatsApp,
                     onOpenProduct: handleOpenProduct,
-                    onAddToCart: handleAddToCart
+                    onAddToCart: handleAddToCart,
+                    isAdminEditing
                 } satisfies StoreOutletContext}
             />
 

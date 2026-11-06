@@ -64,7 +64,7 @@ export default function AdminLayout() {
                 <div className="admin-sidebar-footer">
                     <Link to="/" className="admin-store-link">
                         <StoreIcon size={18} />
-                        Ver loja como cliente
+                        Ver a loja
                     </Link>
 
                     {user && (
