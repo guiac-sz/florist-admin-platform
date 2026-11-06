@@ -66,6 +66,8 @@ export default function LoginPage() {
                     "E-mail ou senha incorretos. Confira os dados e tente de novo."
                 );
                 setPassword("");
+            } else if (error instanceof ApiError && error.status === 400) {
+                setFormError(error.message);
             } else {
                 setFormError(
                     "Não foi possível entrar agora. Tente novamente em instantes."

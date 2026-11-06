@@ -156,3 +156,66 @@
     flex-shrink: 0;
     margin-top: 2px;
 }
+
+.checkbox-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.checkbox-box.has-error {
+    border-color: #a8323e;
+}
+
+.field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.password-strength {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: -12px;
+}
+
+.password-strength-bars {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+}
+
+.password-strength-bars span {
+    height: 4px;
+    border-radius: 999px;
+    background-color: #eadfd8;
+    transition: background-color 0.2s;
+}
+
+.password-strength.weak .filled {
+    background-color: #a8323e;
+}
+
+.password-strength.fair .filled {
+    background-color: #8a5a1f;
+}
+
+.password-strength.good .filled,
+.password-strength.strong .filled {
+    background-color: #29483a;
+}
+
+.password-hint {
+    color: #776960;
+    font-size: 12px;
+}
+
+.password-strength.good .password-hint,
+.password-strength.strong .password-hint {
+    color: #29483a;
+}
+
+.password-hint:only-child {
+    margin-top: -12px;
+}

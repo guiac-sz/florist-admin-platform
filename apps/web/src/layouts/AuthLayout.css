@@ -315,4 +315,13 @@
 
 .auth-link:hover {
     text-decoration: underline;
-}
+}
+.auth-checkboxes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.auth-checkboxes .checkbox-field {
+    font-size: 13px;
+}

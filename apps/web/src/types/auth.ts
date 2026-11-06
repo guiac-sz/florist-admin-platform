@@ -17,3 +17,12 @@ export interface AuthResponse {
     accessToken: string;
     user: AuthUser;
 }
+
+export interface RegisterRequest {
+    name: string;
+    email: string;
+    phone: string;
+    password: string;
+    acceptsTerms: boolean;
+    acceptsMarketing: boolean;
+}

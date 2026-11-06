@@ -30,7 +30,7 @@ export class AuthService {
     const user = await this.usersService.create({
       name: dto.name,
       email: dto.email,
-      phone: dto.phone || null,
+      phone: dto.phone,
       passwordHash: await hash(dto.password, PASSWORD_SALT_ROUNDS),
       acceptsMarketing: dto.acceptsMarketing ?? false,
     });

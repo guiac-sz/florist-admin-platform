@@ -23,15 +23,38 @@ export class ApiError extends Error {
     }
 }
 
-async function request<T>(path: string): Promise<T> {
-    const response = await fetch(`${API_URL}${path}`);
+interface RequestOptions {
+    method?: "GET" | "POST" | "PATCH" | "DELETE";
+    body?: unknown;
+    token?: string | null;
+}
+
+export async function request<T>(
+    path: string,
+    { method = "GET", body, token }: RequestOptions = {}
+): Promise<T> {
+    const headers: Record<string, string> = {};
+
+    if (body !== undefined) {
+        headers["Content-Type"] = "application/json";
+    }
+
+    if (token) {
+        headers.Authorization = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_URL}${path}`, {
+        method,
+        headers,
+        body: body !== undefined ? JSON.stringify(body) : undefined
+    });
 
     if (!response.ok) {
-        const body = (await response.json().catch(() => null)) as ApiErrorBody | null;
+        const errorBody = (await response.json().catch(() => null)) as ApiErrorBody | null;
 
-        const message = Array.isArray(body?.message)
-            ? body.message.join(" ")
-            : (body?.message ?? `Erro ${response.status} ao acessar ${path}`);
+        const message = Array.isArray(errorBody?.message)
+            ? errorBody.message.join(" ")
+            : (errorBody?.message ?? `Erro ${response.status} ao acessar ${path}`);
 
         throw new ApiError(response.status, message);
     }
@@ -64,4 +87,4 @@ export async function getProducts(filters: ProductFilters = {}) {
 export async function getProduct(id: number) {
     const product = await request<ApiProduct>(`/products/${id}`);
     return toProduct(product);
-}
+}

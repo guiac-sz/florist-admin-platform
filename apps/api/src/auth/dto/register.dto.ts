@@ -33,9 +33,9 @@ export class RegisterDto {
   @Transform(({ value }: { value: unknown }) =>
     typeof value === 'string' ? value.replace(/\D/g, '') : value,
   )
-  @IsOptional()
-  @Matches(/^\d{10,11}$/, { message: 'Digite um celular com DDD.' })
-  phone?: string;
+  @IsString({ message: 'Informe o celular com DDD.' })
+  @Matches(/^\d{10,11}$/, { message: 'Informe o celular com DDD.' })
+  phone: string;
 
   /** Mínimo de 8 caracteres, com letras e números */
   @IsString()
