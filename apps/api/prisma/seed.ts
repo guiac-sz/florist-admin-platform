@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { PrismaPg } from '@prisma/adapter-pg';
+import { hash } from 'bcryptjs';
 import { PrismaClient } from '../src/generated/prisma/client';
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
@@ -120,6 +121,37 @@ const products = [
   },
 ];
 
+// Contas de DESENVOLVIMENTO: servem só para testar no seu computador.
+// Em produção, a conta de administração é criada de outro jeito.
+const devUsers = [
+  {
+    name: 'Marina Ferreira',
+    email: 'admin@ateliefora.com',
+    phone: null,
+    password: 'admin1234',
+    role: 'ADMIN' as const,
+  },
+  {
+    name: 'Ana Carolina Souza',
+    email: 'ana@email.com',
+    phone: '15990000000',
+    password: 'flores123',
+    role: 'CUSTOMER' as const,
+  },
+];
+
+async function seedUsers() {
+  for (const { password, ...user } of devUsers) {
+    const passwordHash = await hash(password, 10);
+
+    await prisma.user.upsert({
+      where: { email: user.email },
+      update: { ...user, passwordHash },
+      create: { ...user, passwordHash },
+    });
+  }
+}
+
 async function main() {
   await prisma.product.deleteMany();
 
@@ -148,8 +180,10 @@ async function main() {
     }),
   });
 
+  await seedUsers();
+
   console.log(
-    `Seed concluído: ${categories.length} categorias e ${products.length} produtos.`,
+    `Seed concluído: ${categories.length} categorias, ${products.length} produtos e ${devUsers.length} usuários.`,
   );
 }
 
