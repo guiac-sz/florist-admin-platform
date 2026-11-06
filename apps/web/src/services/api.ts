@@ -59,6 +59,11 @@ export async function request<T>(
         throw new ApiError(response.status, message);
     }
 
+    // 204 No Content: a API não manda corpo (ex.: depois de excluir).
+    if (response.status === 204) {
+        return undefined as T;
+    }
+
     return response.json() as Promise<T>;
 }
 

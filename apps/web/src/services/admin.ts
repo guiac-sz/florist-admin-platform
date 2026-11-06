@@ -1,5 +1,9 @@
 import { request } from "./api";
-import type { AdminProduct, AdminProductUpdate } from "../types/admin";
+import type {
+    AdminProduct,
+    AdminProductInput,
+    AdminProductUpdate
+} from "../types/admin";
 
 type ApiAdminProduct = Omit<AdminProduct, "price"> & { price: string };
 
@@ -10,6 +14,21 @@ function toAdminProduct(product: ApiAdminProduct): AdminProduct {
 export async function getAdminProducts(token: string) {
     const products = await request<ApiAdminProduct[]>("/admin/products", { token });
     return products.map(toAdminProduct);
+}
+
+export async function getAdminProduct(token: string, id: number) {
+    const product = await request<ApiAdminProduct>(`/admin/products/${id}`, { token });
+    return toAdminProduct(product);
+}
+
+export async function createAdminProduct(token: string, data: AdminProductInput) {
+    const product = await request<ApiAdminProduct>("/admin/products", {
+        method: "POST",
+        body: data,
+        token
+    });
+
+    return toAdminProduct(product);
 }
 
 export async function updateAdminProduct(
@@ -24,4 +43,8 @@ export async function updateAdminProduct(
     });
 
     return toAdminProduct(product);
+}
+
+export function deleteAdminProduct(token: string, id: number) {
+    return request<void>(`/admin/products/${id}`, { method: "DELETE", token });
 }

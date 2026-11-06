@@ -20,3 +20,14 @@ export type AdminProductUpdate = Partial<
         | "isFeatured"
     >
 >;
+
+export interface AdminProductInput {
+    name: string;
+    description: string;
+    price: number;
+    imageUrl: string;
+    categoryId: number;
+    isAvailable: boolean;
+    isVisible: boolean;
+    isFeatured: boolean;
+}

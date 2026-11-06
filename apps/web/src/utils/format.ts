@@ -20,3 +20,9 @@ export function formatRelativeDate(isoDate: string) {
 
     return relativeFormatter.format(-Math.round(diffHours / 24), "day");
 }
+
+/** Campo de preço: o que a pessoa digita vira centavos ("14990" → 14990 centavos). */
+export function parsePriceInput(value: string) {
+    const digits = value.replace(/\D/g, "").slice(0, 9);
+    return digits ? Number(digits) : 0;
+}

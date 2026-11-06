@@ -266,3 +266,98 @@
     outline: 3px solid rgba(41, 72, 58, 0.3);
     outline-offset: 2px;
 }
+
+.field-select {
+    padding-right: 40px;
+    appearance: none;
+    cursor: pointer;
+}
+
+.field-select-icon {
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    transform: translateY(-50%);
+
+    color: #776960;
+    pointer-events: none;
+}
+
+.field-textarea {
+    height: auto;
+    min-height: 110px;
+    padding: 12px 14px;
+
+    line-height: 1.5;
+    resize: vertical;
+}
+
+.field-hint {
+    color: #776960;
+    font-size: 12px;
+}
+
+.form-notice {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 12px 14px;
+
+    border-radius: 10px;
+
+    background-color: #e6efe9;
+    color: #29483a;
+
+    font-size: 14px;
+}
+
+.radio-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    cursor: pointer;
+}
+
+.radio-option input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.radio-dot {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+
+    width: 20px;
+    height: 20px;
+    margin-top: 1px;
+
+    border: 1px solid #d9cbc2;
+    border-radius: 50%;
+
+    background-color: #ffffff;
+}
+
+.radio-option input:checked + .radio-dot {
+    border: 6px solid #29483a;
+}
+
+.radio-option input:focus-visible + .radio-dot {
+    box-shadow: 0 0 0 3px rgba(41, 72, 58, 0.25);
+}
+
+.radio-option strong {
+    display: block;
+    color: #332823;
+    font-size: 15px;
+}
+
+.radio-option small {
+    color: #776960;
+    font-size: 12px;
+}

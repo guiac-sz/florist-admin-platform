@@ -223,3 +223,73 @@ a.admin-nav-item:hover {
     color: #776960;
     font-size: 15px;
 }
+
+/* Botões do painel */
+
+.admin-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 12px 22px;
+
+    border-radius: 999px;
+
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+
+    transition:
+        background-color 0.2s,
+        border-color 0.2s;
+}
+
+.admin-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.admin-button.primary {
+    border: none;
+    background-color: #29483a;
+    color: #ffffff;
+}
+
+.admin-button.primary:hover:not(:disabled) {
+    background-color: #20392e;
+    color: #ffffff;
+}
+
+.admin-button.outline {
+    border: 1px solid #d9cbc2;
+    background-color: #ffffff;
+    color: #332823;
+}
+
+.admin-button.outline:hover:not(:disabled) {
+    border-color: #29483a;
+    color: #332823;
+}
+
+.admin-button.danger {
+    border: none;
+    background-color: #a8323e;
+    color: #ffffff;
+}
+
+.admin-button.danger:hover:not(:disabled) {
+    background-color: #8f2833;
+}
+
+.admin-button.danger-outline {
+    width: 100%;
+    border: 1px solid #a8323e;
+    background-color: #ffffff;
+    color: #a8323e;
+}
+
+.admin-button.danger-outline:hover:not(:disabled) {
+    background-color: #fbeceb;
+}

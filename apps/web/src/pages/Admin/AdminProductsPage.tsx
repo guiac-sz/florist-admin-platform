@@ -1,10 +1,23 @@
 import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router";
 
+import DeleteProductDialog from "../../components/DeleteProductDialog/DeleteProductDialog";
 import FormAlert from "../../components/Form/FormAlert";
 import Switch from "../../components/Form/Switch";
-import { SearchIcon, StarIcon } from "../../components/Icons/Icons";
+import {
+    CheckIcon,
+    PencilIcon,
+    PlusIcon,
+    SearchIcon,
+    StarIcon,
+    TrashIcon
+} from "../../components/Icons/Icons";
 import { useAuth } from "../../hooks/useAuth";
-import { getAdminProducts, updateAdminProduct } from "../../services/admin";
+import {
+    deleteAdminProduct,
+    getAdminProducts,
+    updateAdminProduct
+} from "../../services/admin";
 import type { AdminProduct } from "../../types/admin";
 import { formatPrice, formatRelativeDate } from "../../utils/format";
 
@@ -33,12 +46,17 @@ function matchesFilter(product: AdminProduct, filter: Filter) {
 
 export default function AdminProductsPage() {
     const { token } = useAuth();
+    const location = useLocation();
+    const notice = (location.state as { notice?: string } | null)?.notice;
 
     const [products, setProducts] = useState<AdminProduct[] | null>(null);
     const [loadError, setLoadError] = useState<string | null>(null);
     const [actionError, setActionError] = useState<string | null>(null);
     const [search, setSearch] = useState("");
     const [filter, setFilter] = useState<Filter>("all");
+    const [productToDelete, setProductToDelete] = useState<AdminProduct | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [deleteError, setDeleteError] = useState<string | null>(null);
 
     useEffect(() => {
         if (!token) {
@@ -90,6 +108,32 @@ export default function AdminProductsPage() {
         }
     }
 
+    async function handleDelete() {
+        if (!token || !productToDelete) {
+            return;
+        }
+
+        setIsDeleting(true);
+        setDeleteError(null);
+
+        try {
+            await deleteAdminProduct(token, productToDelete.id);
+            setProducts((current) =>
+                current?.filter((item) => item.id !== productToDelete.id) ?? null
+            );
+            setProductToDelete(null);
+        } catch {
+            setDeleteError("Não foi possível excluir. Tente novamente.");
+        } finally {
+            setIsDeleting(false);
+        }
+    }
+
+    function closeDeleteDialog() {
+        setProductToDelete(null);
+        setDeleteError(null);
+    }
+
     const allProducts = products ?? [];
     const searchTerm = normalize(search.trim());
 
@@ -136,6 +180,9 @@ export default function AdminProductsPage() {
                             <th>Disponibilidade</th>
                             <th>Destaque</th>
                             <th>Na vitrine</th>
+                            <th>
+                                <span className="visually-hidden">Ações</span>
+                            </th>
                         </tr>
                     </thead>
 
@@ -190,6 +237,29 @@ export default function AdminProductsPage() {
                                         label={`Mostrar ${product.name} na loja`}
                                     />
                                 </td>
+
+                                <td>
+                                    <div className="admin-row-actions">
+                                        <Link
+                                            to={`/admin/produtos/${product.id}`}
+                                            className="admin-icon-button"
+                                            aria-label={`Editar ${product.name}`}
+                                            title="Editar"
+                                        >
+                                            <PencilIcon size={17} />
+                                        </Link>
+
+                                        <button
+                                            type="button"
+                                            className="admin-icon-button danger"
+                                            onClick={() => setProductToDelete(product)}
+                                            aria-label={`Excluir ${product.name}`}
+                                            title="Excluir"
+                                        >
+                                            <TrashIcon size={17} />
+                                        </button>
+                                    </div>
+                                </td>
                             </tr>
                         ))}
                     </tbody>
@@ -212,7 +282,19 @@ export default function AdminProductsPage() {
                         Mudanças entram no ar na hora.
                     </p>
                 </div>
+
+                <Link to="/admin/produtos/novo" className="admin-button primary">
+                    <PlusIcon size={18} />
+                    Novo produto
+                </Link>
             </header>
+
+            {notice && (
+                <p className="form-notice admin-notice" role="status">
+                    <CheckIcon size={16} />
+                    {notice}
+                </p>
+            )}
 
             <div className="admin-stats">
                 {stats.map((stat) => (
@@ -252,6 +334,16 @@ export default function AdminProductsPage() {
             {actionError && <FormAlert>{actionError}</FormAlert>}
 
             {renderTable()}
+
+            {productToDelete && (
+                <DeleteProductDialog
+                    productName={productToDelete.name}
+                    isDeleting={isDeleting}
+                    error={deleteError}
+                    onCancel={closeDeleteDialog}
+                    onConfirm={handleDelete}
+                />
+            )}
         </section>
     );
 }
