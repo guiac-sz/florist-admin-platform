@@ -4,6 +4,7 @@ import { Outlet } from "react-router";
 import Header from "../components/Header/Header";
 import ProductModal from "../components/ProductModal/ProductModal";
 import Cart from "../components/Cart/Cart";
+import WhatsAppFloat from "../components/WhatsAppFloat/WhatsAppFloat";
 
 import type { Product } from "../types/catalog";
 import type { CartItem } from "../types/cart";
@@ -121,6 +122,8 @@ Poderia confirmar a disponibilidade?`
                     onAddToCart: handleAddToCart
                 } satisfies StoreOutletContext}
             />
+
+            <WhatsAppFloat onClick={handleWhatsApp} />
 
             {selectedProduct && (
                 <ProductModal

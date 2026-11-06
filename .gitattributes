@@ -1,0 +1,3 @@
+# Guarda os arquivos de texto sempre com quebra de linha LF no repositório,
+# não importa se foram editados no Windows, no Linux ou no Mac.
+* text=auto eol=lf

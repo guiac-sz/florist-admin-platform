@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router";
+
+import AccountMenu from "../AccountMenu/AccountMenu";
+import { BagIcon, FlowerIcon, MenuIcon, UserIcon } from "../Icons/Icons";
 import { storeConfig } from "../../config/storeConfig";
-import { openWhatsApp } from "../../utils/whatsapp";
+import { useAuth } from "../../hooks/useAuth";
+
 import "./Header.css";
 
 interface HeaderProps {
@@ -12,6 +17,7 @@ export default function Header({
     cartItemCount,
     onOpenCart
 }: HeaderProps) {
+    const { isAuthenticated } = useAuth();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [activeSection, setActiveSection] = useState("inicio");
 
@@ -58,10 +64,6 @@ export default function Header({
         };
     }, []);
 
-    function handleWhatsApp() {
-       openWhatsApp("Olá! Vim pelo site e gostaria de fazer um pedido.");
-    }
-
     function closeMenu() {
         setIsMenuOpen(false);
     }
@@ -73,7 +75,7 @@ export default function Header({
     return (
         <>
             <div className="top-bar">
-                Entrega em Sorocaba • Pedidos pelo WhatsApp •
+                Entrega em Sorocaba • Compre pelo site ou pelo WhatsApp •
                 Flores frescas todos os dias
             </div>
 
@@ -83,7 +85,9 @@ export default function Header({
                     className="brand"
                     onClick={closeMenu}
                 >
-                    <div className="brand-mark">❀</div>
+                    <div className="brand-mark">
+                        <FlowerIcon size={18} />
+                    </div>
                     <strong>{storeConfig.name}</strong>
                 </a>
 
@@ -136,45 +140,38 @@ export default function Header({
                 </nav>
 
                 <div className="header-actions">
+                    {!isAuthenticated && (
+                        <Link to="/entrar" className="header-login-link">
+                            <UserIcon size={18} />
+                            Entrar
+                        </Link>
+                    )}
+
                     <button
                         className="header-cart-button"
                         type="button"
                         onClick={onOpenCart}
                         aria-label="Abrir carrinho"
                     >
-                        <span className="cart-icon">
-                            🛒
-                        </span>
+                        <BagIcon size={18} />
 
-                        <span className="cart-text">
-                            Carrinho
-                        </span>
+                        <span className="cart-text">Carrinho</span>
 
                         {cartItemCount > 0 && (
-                            <span className="cart-badge">
-                                {cartItemCount}
-                            </span>
+                            <span className="cart-badge">{cartItemCount}</span>
                         )}
                     </button>
 
-                    <button
-                        className="header-whatsapp-button"
-                        type="button"
-                        onClick={handleWhatsApp}
-                    >
-                        Pedir pelo WhatsApp
-                    </button>
+                    {isAuthenticated && <AccountMenu />}
 
                     <button
                         className="mobile-menu-button"
                         type="button"
-                        onClick={() =>
-                            setIsMenuOpen(!isMenuOpen)
-                        }
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
                         aria-label="Abrir menu"
                         aria-expanded={isMenuOpen}
                     >
-                        ☰
+                        <MenuIcon size={24} />
                     </button>
                 </div>
             </header>

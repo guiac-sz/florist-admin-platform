@@ -53,8 +53,6 @@
     border-radius: 50%;
 
     color: #29483a;
-
-    font-size: 19px;
 }
 
 .brand strong {
@@ -132,10 +130,6 @@
     background-color: #f0e5dd;
 }
 
-.cart-icon {
-    font-size: 17px;
-}
-
 .cart-text {
     font-size: 13px;
 }
@@ -160,27 +154,29 @@
 }
 
 
-/* WhatsApp */
+/* Entrar */
 
-.header-whatsapp-button {
-    border: none;
+.header-login-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 
-    padding: 12px 20px;
+    padding: 11px 14px;
 
     border-radius: 999px;
 
-    background-color: #29483a;
-    color: white;
+    color: #29483a;
 
+    font-size: 14px;
     font-weight: 700;
+    text-decoration: none;
 
-    cursor: pointer;
-
-    transition: 0.2s;
+    transition: background-color 0.2s;
 }
 
-.header-whatsapp-button:hover {
-    background-color: #20392e;
+.header-login-link:hover {
+    background-color: #f0e5dd;
+    color: #29483a;
 }
 
 
@@ -191,8 +187,7 @@
 
     border: none;
     background: transparent;
-
-    font-size: 24px;
+    color: #29483a;
 
     cursor: pointer;
 }
@@ -229,7 +224,7 @@
         display: block;
     }
 
-    .header-whatsapp-button {
+    .account-trigger-text {
         display: none;
     }
 }

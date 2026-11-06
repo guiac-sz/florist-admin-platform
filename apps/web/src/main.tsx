@@ -7,6 +7,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 import "./styles/global.css";
 import App from "./App";
+import AuthProvider from "./contexts/AuthProvider";
 
 const rootElement = document.getElementById("root");
 
@@ -17,7 +18,9 @@ if (!rootElement) {
 createRoot(rootElement).render(
     <StrictMode>
         <BrowserRouter>
-            <App />
+            <AuthProvider>
+                <App />
+            </AuthProvider>
         </BrowserRouter>
     </StrictMode>
 );

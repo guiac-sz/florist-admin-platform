@@ -102,3 +102,69 @@ export function StarIcon(props: IconProps) {
         </BaseIcon>
     );
 }
+export function UserIcon(props: IconProps) {
+    return (
+        <BaseIcon {...props}>
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+        </BaseIcon>
+    );
+}
+
+export function BagIcon(props: IconProps) {
+    return (
+        <BaseIcon {...props}>
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+            <path d="M3 6h18" />
+            <path d="M16 10a4 4 0 0 1-8 0" />
+        </BaseIcon>
+    );
+}
+
+export function ChevronDownIcon(props: IconProps) {
+    return (
+        <BaseIcon {...props}>
+            <path d="m6 9 6 6 6-6" />
+        </BaseIcon>
+    );
+}
+
+export function PackageIcon(props: IconProps) {
+    return (
+        <BaseIcon {...props}>
+            <path d="m7.5 4.27 9 5.15" />
+            <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+            <path d="m3.3 7 8.7 5 8.7-5" />
+            <path d="M12 22V12" />
+        </BaseIcon>
+    );
+}
+
+export function MapPinIcon(props: IconProps) {
+    return (
+        <BaseIcon {...props}>
+            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+            <circle cx="12" cy="10" r="3" />
+        </BaseIcon>
+    );
+}
+
+export function LogOutIcon(props: IconProps) {
+    return (
+        <BaseIcon {...props}>
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <path d="m16 17 5-5-5-5" />
+            <path d="M21 12H9" />
+        </BaseIcon>
+    );
+}
+
+export function MenuIcon(props: IconProps) {
+    return (
+        <BaseIcon {...props}>
+            <path d="M4 6h16" />
+            <path d="M4 12h16" />
+            <path d="M4 18h16" />
+        </BaseIcon>
+    );
+}

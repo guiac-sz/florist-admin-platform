@@ -1,0 +1,150 @@
+.account-menu {
+    position: relative;
+}
+
+.account-trigger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 5px 14px 5px 5px;
+
+    border: 1px solid #d9cbc2;
+    border-radius: 999px;
+
+    background-color: #ffffff;
+    color: #332823;
+
+    text-align: left;
+
+    transition: border-color 0.2s;
+}
+
+.account-trigger:hover,
+.account-trigger[aria-expanded="true"] {
+    border-color: #29483a;
+}
+
+.account-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 36px;
+    height: 36px;
+
+    border-radius: 50%;
+
+    background-color: #eadfd8;
+    color: #29483a;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.account-trigger-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.account-trigger-text strong {
+    font-size: 13px;
+}
+
+.account-trigger-text small {
+    color: #776960;
+    font-size: 11px;
+}
+
+.account-trigger-text small.is-admin {
+    color: #8c4a54;
+}
+
+.account-chevron {
+    color: #776960;
+    transition: transform 0.2s;
+}
+
+.account-trigger[aria-expanded="true"] .account-chevron {
+    transform: rotate(180deg);
+}
+
+.account-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 1100;
+
+    width: 260px;
+    padding: 8px;
+
+    border: 1px solid #eadfd8;
+    border-radius: 16px;
+
+    background-color: #ffffff;
+    box-shadow: 0 18px 40px rgba(51, 40, 35, 0.12);
+}
+
+.account-dropdown-header {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    padding: 12px 12px 14px;
+    margin-bottom: 6px;
+
+    border-bottom: 1px solid #eadfd8;
+}
+
+.account-dropdown-header strong {
+    color: #332823;
+    font-size: 14px;
+}
+
+.account-dropdown-header span {
+    color: #776960;
+    font-size: 12px;
+}
+
+.account-dropdown-links {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.account-dropdown-links a,
+.account-signout {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    width: 100%;
+    padding: 11px 12px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: transparent;
+    color: #332823;
+
+    font-size: 14px;
+    text-align: left;
+    text-decoration: none;
+
+    transition: background-color 0.2s;
+}
+
+.account-dropdown-links a:hover,
+.account-signout:hover {
+    background-color: #f0e5dd;
+}
+
+.account-dropdown-links svg {
+    color: #776960;
+}
+
+.account-signout,
+.account-signout svg {
+    color: #8c4a54;
+}

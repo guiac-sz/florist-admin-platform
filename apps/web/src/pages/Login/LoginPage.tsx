@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, Navigate, useNavigate } from "react-router";
 
 import TextField from "../../components/Form/TextField";
 import PasswordField from "../../components/Form/PasswordField";
@@ -7,8 +7,8 @@ import Checkbox from "../../components/Form/Checkbox";
 import FormAlert from "../../components/Form/FormAlert";
 import { MessageIcon } from "../../components/Icons/Icons";
 import { ApiError } from "../../services/api";
-import { login } from "../../services/auth";
 import { openWhatsApp } from "../../utils/whatsapp";
+import { useAuth } from "../../hooks/useAuth";
 
 interface LoginErrors {
     email?: string;
@@ -35,6 +35,7 @@ function validate(email: string, password: string): LoginErrors {
 
 export default function LoginPage() {
     const navigate = useNavigate();
+    const { isAuthenticated, signIn } = useAuth();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -57,8 +58,8 @@ export default function LoginPage() {
         setIsSubmitting(true);
 
         try {
-            await login({ email: email.trim(), password });
-            navigate("/");
+            await signIn({ email: email.trim(), password }, remember);
+            navigate("/", { replace: true });
         } catch (error) {
             if (error instanceof ApiError && error.status === 401) {
                 setFormError(
@@ -73,6 +74,10 @@ export default function LoginPage() {
         } finally {
             setIsSubmitting(false);
         }
+    }
+
+    if (isAuthenticated && !isSubmitting) {
+        return <Navigate to="/" replace />;
     }
 
     return (
