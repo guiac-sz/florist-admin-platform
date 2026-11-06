@@ -168,3 +168,43 @@ export function MenuIcon(props: IconProps) {
         </BaseIcon>
     );
 }
+
+export function GridIcon(props: IconProps) {
+    return (
+        <BaseIcon {...props}>
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="7" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
+            <rect x="14" y="14" width="7" height="7" rx="1" />
+        </BaseIcon>
+    );
+}
+
+export function StoreIcon(props: IconProps) {
+    return (
+        <BaseIcon {...props}>
+            <path d="M3 9 4.5 4h15L21 9" />
+            <path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0" />
+            <path d="M5 11v9h14v-9" />
+            <path d="M10 20v-5h4v5" />
+        </BaseIcon>
+    );
+}
+
+export function SearchIcon(props: IconProps) {
+    return (
+        <BaseIcon {...props}>
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3.5-3.5" />
+        </BaseIcon>
+    );
+}
+
+export function LockIcon(props: IconProps) {
+    return (
+        <BaseIcon {...props}>
+            <rect x="4" y="11" width="16" height="10" rx="2" />
+            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+        </BaseIcon>
+    );
+}

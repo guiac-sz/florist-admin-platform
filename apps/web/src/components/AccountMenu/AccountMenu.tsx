@@ -3,6 +3,7 @@ import { Link } from "react-router";
 
 import {
     ChevronDownIcon,
+    GridIcon,
     LogOutIcon,
     MapPinIcon,
     PackageIcon,
@@ -10,16 +11,9 @@ import {
 } from "../Icons/Icons";
 import { useAuth } from "../../hooks/useAuth";
 import type { AuthUser } from "../../types/auth";
+import { getFirstName, getInitials } from "../../utils/user";
 
 import "./AccountMenu.css";
-
-function getInitials(name: string) {
-    const parts = name.trim().split(/\s+/);
-    const first = parts[0]?.[0] ?? "";
-    const last = parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? "") : "";
-
-    return (first + last).toUpperCase();
-}
 
 function getRoleLabel(user: AuthUser) {
     return user.role === "ADMIN" ? "Administração" : "Minha conta";
@@ -60,7 +54,7 @@ export default function AccountMenu() {
         return null;
     }
 
-    const firstName = user.name.split(" ")[0];
+    const firstName = getFirstName(user.name);
 
     function closeMenu() {
         setIsOpen(false);
@@ -100,6 +94,13 @@ export default function AccountMenu() {
                     </div>
 
                     <nav className="account-dropdown-links">
+                        {user.role === "ADMIN" && (
+                            <Link to="/admin/produtos" onClick={closeMenu}>
+                                <GridIcon size={16} />
+                                Painel da loja
+                            </Link>
+                        )}
+
                         <Link to="/minha-conta/pedidos" onClick={closeMenu}>
                             <PackageIcon size={16} />
                             Meus pedidos

@@ -1,10 +1,13 @@
-import { Route, Routes } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 
 import StoreLayout from "./layouts/StoreLayout";
 import AuthLayout from "./layouts/AuthLayout";
+import AdminLayout from "./layouts/AdminLayout";
+import RequireAdmin from "./components/RequireAdmin/RequireAdmin";
 import Home from "./pages/Home/Home";
 import LoginPage from "./pages/Login/LoginPage";
 import RegisterPage from "./pages/Register/RegisterPage";
+import AdminProductsPage from "./pages/Admin/AdminProductsPage";
 import NotFoundPage from "./pages/NotFound/NotFoundPage";
 
 export default function App() {
@@ -17,6 +20,18 @@ export default function App() {
             <Route element={<AuthLayout />}>
                 <Route path="entrar" element={<LoginPage />} />
                 <Route path="criar-conta" element={<RegisterPage />} />
+            </Route>
+
+            <Route
+                path="admin"
+                element={
+                    <RequireAdmin>
+                        <AdminLayout />
+                    </RequireAdmin>
+                }
+            >
+                <Route index element={<Navigate to="produtos" replace />} />
+                <Route path="produtos" element={<AdminProductsPage />} />
             </Route>
 
             <Route path="*" element={<NotFoundPage />} />

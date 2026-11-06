@@ -67,6 +67,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
     const value: AuthContextValue = {
         user: session?.user ?? null,
+        token: session?.accessToken ?? null,
         isAuthenticated: session !== null,
         signIn,
         signUp,

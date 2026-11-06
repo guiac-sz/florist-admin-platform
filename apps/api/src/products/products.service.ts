@@ -1,6 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ListProductsQueryDto } from './dto/list-products-query.dto';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 const productInclude = {
   category: {
@@ -41,5 +47,80 @@ export class ProductsService {
     }
 
     return product;
+  }
+
+  // ----- Administração -----
+
+  findAllForAdmin() {
+    return this.prisma.product.findMany({
+      orderBy: { sortOrder: 'asc' },
+      include: productInclude,
+    });
+  }
+
+  async findOneForAdmin(id: number) {
+    const product = await this.prisma.product.findUnique({
+      where: { id },
+      include: productInclude,
+    });
+
+    if (!product) {
+      throw new NotFoundException(`Produto ${id} não encontrado`);
+    }
+
+    return product;
+  }
+
+  async create(dto: CreateProductDto) {
+    await this.ensureCategoryExists(dto.categoryId);
+
+    const last = await this.prisma.product.findFirst({
+      orderBy: { sortOrder: 'desc' },
+      select: { sortOrder: true },
+    });
+
+    return this.prisma.product.create({
+      data: {
+        name: dto.name,
+        description: dto.description,
+        price: dto.price,
+        imageUrl: dto.imageUrl,
+        categoryId: dto.categoryId,
+        isAvailable: dto.isAvailable,
+        isVisible: dto.isVisible,
+        isFeatured: dto.isFeatured,
+        sortOrder: (last?.sortOrder ?? 0) + 1,
+      },
+      include: productInclude,
+    });
+  }
+
+  async update(id: number, dto: UpdateProductDto) {
+    await this.findOneForAdmin(id);
+
+    if (dto.categoryId !== undefined) {
+      await this.ensureCategoryExists(dto.categoryId);
+    }
+
+    return this.prisma.product.update({
+      where: { id },
+      data: dto,
+      include: productInclude,
+    });
+  }
+
+  async remove(id: number) {
+    await this.findOneForAdmin(id);
+    await this.prisma.product.delete({ where: { id } });
+  }
+
+  private async ensureCategoryExists(categoryId: number) {
+    const category = await this.prisma.category.findUnique({
+      where: { id: categoryId },
+    });
+
+    if (!category) {
+      throw new BadRequestException('Categoria não encontrada.');
+    }
   }
 }

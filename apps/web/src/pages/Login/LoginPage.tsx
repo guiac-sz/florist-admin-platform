@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Link, Navigate, useNavigate } from "react-router";
+import { Link, Navigate, useLocation, useNavigate } from "react-router";
 
 import TextField from "../../components/Form/TextField";
 import PasswordField from "../../components/Form/PasswordField";
@@ -35,7 +35,11 @@ function validate(email: string, password: string): LoginErrors {
 
 export default function LoginPage() {
     const navigate = useNavigate();
+    const location = useLocation();
     const { isAuthenticated, signIn } = useAuth();
+
+    const redirectTo =
+        (location.state as { from?: string } | null)?.from ?? "/";
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -59,7 +63,7 @@ export default function LoginPage() {
 
         try {
             await signIn({ email: email.trim(), password }, remember);
-            navigate("/", { replace: true });
+            navigate(redirectTo, { replace: true });
         } catch (error) {
             if (error instanceof ApiError && error.status === 401) {
                 setFormError(
@@ -79,7 +83,7 @@ export default function LoginPage() {
     }
 
     if (isAuthenticated && !isSubmitting) {
-        return <Navigate to="/" replace />;
+        return <Navigate to={redirectTo} replace />;
     }
 
     return (
