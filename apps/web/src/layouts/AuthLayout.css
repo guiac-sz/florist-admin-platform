@@ -265,8 +265,13 @@
     color: #ffffff;
 }
 
-.auth-button.primary:hover {
+.auth-button.primary:hover:not(:disabled) {
     background-color: #20392e;
+}
+
+.auth-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
 }
 
 .auth-button.outline {
@@ -310,4 +315,4 @@
 
 .auth-link:hover {
     text-decoration: underline;
-}
+}

@@ -9,11 +9,31 @@ export interface ProductFilters {
 
 type ApiProduct = Omit<Product, "price"> & { price: string };
 
+interface ApiErrorBody {
+    message?: string | string[];
+}
+
+export class ApiError extends Error {
+    readonly status: number;
+
+    constructor(status: number, message: string) {
+        super(message);
+        this.name = "ApiError";
+        this.status = status;
+    }
+}
+
 async function request<T>(path: string): Promise<T> {
     const response = await fetch(`${API_URL}${path}`);
 
     if (!response.ok) {
-        throw new Error(`Erro ${response.status} ao acessar ${path}`);
+        const body = (await response.json().catch(() => null)) as ApiErrorBody | null;
+
+        const message = Array.isArray(body?.message)
+            ? body.message.join(" ")
+            : (body?.message ?? `Erro ${response.status} ao acessar ${path}`);
+
+        throw new ApiError(response.status, message);
     }
 
     return response.json() as Promise<T>;
@@ -44,4 +64,4 @@ export async function getProducts(filters: ProductFilters = {}) {
 export async function getProduct(id: number) {
     const product = await request<ApiProduct>(`/products/${id}`);
     return toProduct(product);
-}
+}

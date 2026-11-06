@@ -1,12 +1,80 @@
-import { Link } from "react-router";
+import { useState, type FormEvent } from "react";
+import { Link, useNavigate } from "react-router";
 
 import TextField from "../../components/Form/TextField";
 import PasswordField from "../../components/Form/PasswordField";
 import Checkbox from "../../components/Form/Checkbox";
+import FormAlert from "../../components/Form/FormAlert";
 import { MessageIcon } from "../../components/Icons/Icons";
+import { ApiError } from "../../services/api";
+import { login } from "../../services/auth";
 import { openWhatsApp } from "../../utils/whatsapp";
 
+interface LoginErrors {
+    email?: string;
+    password?: string;
+}
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function validate(email: string, password: string): LoginErrors {
+    const errors: LoginErrors = {};
+
+    if (!email.trim()) {
+        errors.email = "Informe seu e-mail.";
+    } else if (!EMAIL_PATTERN.test(email.trim())) {
+        errors.email = "Digite um e-mail válido, como nome@exemplo.com.";
+    }
+
+    if (!password) {
+        errors.password = "Informe sua senha.";
+    }
+
+    return errors;
+}
+
 export default function LoginPage() {
+    const navigate = useNavigate();
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [remember, setRemember] = useState(true);
+    const [errors, setErrors] = useState<LoginErrors>({});
+    const [formError, setFormError] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+
+        const validationErrors = validate(email, password);
+        setErrors(validationErrors);
+        setFormError(null);
+
+        if (Object.keys(validationErrors).length > 0) {
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            await login({ email: email.trim(), password });
+            navigate("/");
+        } catch (error) {
+            if (error instanceof ApiError && error.status === 401) {
+                setFormError(
+                    "E-mail ou senha incorretos. Confira os dados e tente de novo."
+                );
+                setPassword("");
+            } else {
+                setFormError(
+                    "Não foi possível entrar agora. Tente novamente em instantes."
+                );
+            }
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
     return (
         <section className="auth-page">
             <header>
@@ -19,17 +87,21 @@ export default function LoginPage() {
                 </p>
             </header>
 
-            <form
-                className="auth-form"
-                noValidate
-                onSubmit={(event) => event.preventDefault()}
-            >
+            <form className="auth-form" noValidate onSubmit={handleSubmit}>
+                {formError && <FormAlert>{formError}</FormAlert>}
+
                 <TextField
                     label="E-mail"
                     type="email"
                     name="email"
                     placeholder="seuemail@exemplo.com"
                     autoComplete="email"
+                    value={email}
+                    error={errors.email}
+                    onChange={(event) => {
+                        setEmail(event.target.value);
+                        setErrors((current) => ({ ...current, email: undefined }));
+                    }}
                 />
 
                 <PasswordField
@@ -37,13 +109,20 @@ export default function LoginPage() {
                     name="password"
                     placeholder="Sua senha"
                     autoComplete="current-password"
+                    value={password}
+                    error={errors.password}
+                    onChange={(event) => {
+                        setPassword(event.target.value);
+                        setErrors((current) => ({ ...current, password: undefined }));
+                    }}
                 />
 
                 <div className="auth-options">
                     <Checkbox
                         label="Manter conectado"
                         name="remember"
-                        defaultChecked
+                        checked={remember}
+                        onChange={(event) => setRemember(event.target.checked)}
                     />
 
                     <Link to="/esqueci-senha" className="auth-link">
@@ -51,8 +130,12 @@ export default function LoginPage() {
                     </Link>
                 </div>
 
-                <button type="submit" className="auth-button primary">
-                    Entrar
+                <button
+                    type="submit"
+                    className="auth-button primary"
+                    disabled={isSubmitting}
+                >
+                    {isSubmitting ? "Entrando..." : "Entrar"}
                 </button>
             </form>
 
