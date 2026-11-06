@@ -1,0 +1,50 @@
+.dialog.crop-dialog {
+    max-width: 520px;
+}
+
+/* O Cropper ocupa todo o espaço do pai (position: absolute),
+   então o pai precisa ter tamanho e position definidos. */
+.crop-area {
+    position: relative;
+
+    height: min(480px, 55vh);
+
+    overflow: hidden;
+    border-radius: 14px;
+
+    background-color: #20392e;
+}
+
+.crop-zoom {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.crop-zoom input[type="range"] {
+    flex: 1;
+    accent-color: #29483a;
+}
+
+.crop-zoom-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 32px;
+    height: 32px;
+
+    border: 1px solid #d9cbc2;
+    border-radius: 50%;
+
+    background-color: #ffffff;
+    color: #2f3d35;
+}
+
+.crop-zoom-button:hover:not(:disabled) {
+    border-color: #29483a;
+}
+
+.crop-zoom-button:disabled {
+    opacity: 0.4;
+}

@@ -37,8 +37,13 @@ export class CreateProductDto {
   @Min(0.01, { message: 'O preço precisa ser maior que zero.' })
   price: number;
 
-  /** Endereço da foto do produto */
-  @IsUrl({}, { message: 'Informe um endereço de imagem válido.' })
+  /** Endereço da foto do produto. Exemplo: http://localhost:3000/uploads/foto.webp */
+  // require_tld: false aceita endereços sem ".com" no final, como o
+  // "localhost" das fotos enviadas pelo painel em desenvolvimento.
+  @IsUrl(
+    { require_tld: false, require_protocol: true, protocols: ['http', 'https'] },
+    { message: 'Informe um endereço de imagem válido.' },
+  )
   imageUrl: string;
 
   /** Id da categoria */

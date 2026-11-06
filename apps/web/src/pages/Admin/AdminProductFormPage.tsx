@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router";
 
 import ProductCard from "../../components/ProductCard/ProductCard";
 import DeleteProductDialog from "../../components/DeleteProductDialog/DeleteProductDialog";
+import PhotoCropDialog from "../../components/PhotoCropDialog/PhotoCropDialog";
 import TextField from "../../components/Form/TextField";
 import SelectField from "../../components/Form/SelectField";
 import TextAreaField from "../../components/Form/TextAreaField";
@@ -43,7 +44,8 @@ interface ProductForm {
 
 type FormErrors = Partial<Record<"name" | "description" | "price" | "imageUrl" | "categoryId", string>>;
 
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+// A foto escolhida pode ser grande: ela é recortada e reduzida antes do envio.
+const MAX_IMAGE_SIZE = 20 * 1024 * 1024;
 const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 const emptyForm: ProductForm = {
@@ -102,6 +104,9 @@ export default function AdminProductFormPage() {
     const [uploadError, setUploadError] = useState<string | null>(null);
     const [isDragging, setIsDragging] = useState(false);
 
+    // Endereço temporário (blob:) da foto escolhida, enquanto ela é recortada.
+    const [cropSource, setCropSource] = useState<string | null>(null);
+
     useEffect(() => {
         getCategories()
             .then(setCategories)
@@ -153,19 +158,38 @@ export default function AdminProductFormPage() {
         setErrors((current) => ({ ...current, [errorKey]: undefined }));
     }
 
-    async function handleUpload(file: File) {
-        if (!token) {
-            return;
-        }
-
-        // Confere antes de enviar, para dar a resposta na hora.
+    // 1º passo: confere a foto escolhida e abre a janela de recorte.
+    function handleFileSelected(file: File) {
         if (!IMAGE_TYPES.includes(file.type)) {
             setUploadError("Envie uma imagem JPG, PNG ou WEBP.");
             return;
         }
 
         if (file.size > MAX_IMAGE_SIZE) {
-            setUploadError("A foto passa de 5 MB. Escolha uma menor.");
+            setUploadError("A foto passa de 20 MB. Escolha uma menor.");
+            return;
+        }
+
+        setUploadError(null);
+
+        // createObjectURL cria um endereço local para o arquivo, sem enviar nada.
+        setCropSource(URL.createObjectURL(file));
+    }
+
+    function closeCropDialog() {
+        if (cropSource) {
+            // Libera a memória usada pelo endereço temporário.
+            URL.revokeObjectURL(cropSource);
+        }
+
+        setCropSource(null);
+    }
+
+    // 2º passo: recebe a foto já recortada e envia para a API.
+    async function handleUpload(file: File) {
+        closeCropDialog();
+
+        if (!token) {
             return;
         }
 
@@ -178,7 +202,7 @@ export default function AdminProductFormPage() {
         } catch (error) {
             setUploadError(
                 error instanceof ApiError && error.status === 413
-                    ? "A foto passa de 5 MB. Escolha uma menor."
+                    ? "A foto ficou grande demais. Tente aproximar menos ou use outra imagem."
                     : error instanceof ApiError
                       ? error.message
                       : "Não foi possível enviar a foto. Tente novamente."
@@ -344,7 +368,7 @@ export default function AdminProductFormPage() {
                                         setIsDragging(false);
 
                                         const file = event.dataTransfer.files[0];
-                                        if (file) void handleUpload(file);
+                                        if (file) handleFileSelected(file);
                                     }}
                                 >
                                     <input
@@ -353,7 +377,7 @@ export default function AdminProductFormPage() {
                                         disabled={isUploading}
                                         onChange={(event) => {
                                             const file = event.target.files?.[0];
-                                            if (file) void handleUpload(file);
+                                            if (file) handleFileSelected(file);
                                             event.target.value = "";
                                         }}
                                     />
@@ -369,8 +393,8 @@ export default function AdminProductFormPage() {
                                     </strong>
 
                                     <small>
-                                        Clique ou arraste aqui. JPG, PNG ou WEBP, até 5 MB.
-                                        Formato vertical (4:5) fica melhor.
+                                        Clique ou arraste aqui (JPG, PNG ou WEBP).
+                                        Depois você escolhe o enquadramento.
                                     </small>
                                 </label>
 
@@ -540,6 +564,14 @@ export default function AdminProductFormPage() {
                     error={deleteError}
                     onCancel={() => setIsDeleteOpen(false)}
                     onConfirm={handleDelete}
+                />
+            )}
+
+            {cropSource && (
+                <PhotoCropDialog
+                    imageSrc={cropSource}
+                    onCancel={closeCropDialog}
+                    onConfirm={handleUpload}
                 />
             )}
         </section>
