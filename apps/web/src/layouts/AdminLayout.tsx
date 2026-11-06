@@ -5,7 +5,8 @@ import {
     GridIcon,
     LogOutIcon,
     PackageIcon,
-    StoreIcon
+    StoreIcon,
+    TagIcon
 } from "../components/Icons/Icons";
 import { storeConfig } from "../config/storeConfig";
 import { useAuth } from "../hooks/useAuth";
@@ -52,6 +53,11 @@ export default function AdminLayout() {
                     <NavLink to="/admin/produtos" className="admin-nav-item">
                         <FlowerIcon size={18} />
                         Produtos e vitrine
+                    </NavLink>
+
+                    <NavLink to="/admin/categorias" className="admin-nav-item">
+                        <TagIcon size={18} />
+                        Categorias
                     </NavLink>
                 </nav>
 

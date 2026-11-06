@@ -16,10 +16,11 @@ import {
     UploadIcon
 } from "../../components/Icons/Icons";
 import { useAuth } from "../../hooks/useAuth";
-import { ApiError, getCategories } from "../../services/api";
+import { ApiError } from "../../services/api";
 import {
     createAdminProduct,
     deleteAdminProduct,
+    getAdminCategories,
     getAdminProduct,
     updateAdminProduct,
     uploadProductImage
@@ -108,10 +109,15 @@ export default function AdminProductFormPage() {
     const [cropSource, setCropSource] = useState<string | null>(null);
 
     useEffect(() => {
-        getCategories()
+        if (!token) {
+            return;
+        }
+
+        // Categorias do painel: a lista da loja esconde as que ainda não têm produtos.
+        getAdminCategories(token)
             .then(setCategories)
             .catch(() => setLoadError("Não foi possível carregar as categorias."));
-    }, []);
+    }, [token]);
 
     useEffect(() => {
         if (!token || productId === null) {

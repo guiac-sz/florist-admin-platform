@@ -1,5 +1,6 @@
 import { request } from "./api";
 import type {
+    AdminCategory,
     AdminProduct,
     AdminProductInput,
     AdminProductUpdate
@@ -68,4 +69,36 @@ export async function uploadProductImage(token: string, file: File) {
     });
 
     return url;
+}
+
+export function getAdminCategories(token: string) {
+    return request<AdminCategory[]>("/admin/categories", { token });
+}
+
+export function createAdminCategory(token: string, name: string) {
+    return request<AdminCategory>("/admin/categories", {
+        method: "POST",
+        body: { name },
+        token
+    });
+}
+
+export function renameAdminCategory(token: string, id: number, name: string) {
+    return request<AdminCategory>(`/admin/categories/${id}`, {
+        method: "PATCH",
+        body: { name },
+        token
+    });
+}
+
+export function deleteAdminCategory(token: string, id: number) {
+    return request<void>(`/admin/categories/${id}`, { method: "DELETE", token });
+}
+
+export function reorderAdminCategories(token: string, ids: number[]) {
+    return request<void>("/admin/categories/order", {
+        method: "PUT",
+        body: { ids },
+        token
+    });
 }

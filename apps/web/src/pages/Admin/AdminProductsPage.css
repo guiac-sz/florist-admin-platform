@@ -236,6 +236,7 @@
 }
 
 .admin-table-footer {
+    margin: 0;
     padding: 14px 18px;
 
     border-top: 1px solid #f0e5dd;

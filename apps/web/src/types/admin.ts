@@ -31,3 +31,11 @@ export interface AdminProductInput {
     isVisible: boolean;
     isFeatured: boolean;
 }
+
+export interface AdminCategory {
+    id: number;
+    name: string;
+    slug: string;
+    sortOrder: number;
+    productCount: number;
+}

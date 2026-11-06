@@ -5,7 +5,7 @@ import FormAlert from "../Form/FormAlert";
 import { MinusIcon, PlusIcon } from "../Icons/Icons";
 import { cropImage, PRODUCT_IMAGE_ASPECT } from "../../utils/image";
 
-import "../DeleteProductDialog/DeleteProductDialog.css";
+import "../ConfirmDialog/ConfirmDialog.css";
 import "./PhotoCropDialog.css";
 
 interface PhotoCropDialogProps {

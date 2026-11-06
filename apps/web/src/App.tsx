@@ -9,6 +9,7 @@ import LoginPage from "./pages/Login/LoginPage";
 import RegisterPage from "./pages/Register/RegisterPage";
 import AdminProductsPage from "./pages/Admin/AdminProductsPage";
 import AdminProductFormPage from "./pages/Admin/AdminProductFormPage";
+import AdminCategoriesPage from "./pages/Admin/AdminCategoriesPage";
 import NotFoundPage from "./pages/NotFound/NotFoundPage";
 
 export default function App() {
@@ -35,6 +36,7 @@ export default function App() {
                 <Route path="produtos" element={<AdminProductsPage />} />
                 <Route path="produtos/novo" element={<AdminProductFormPage />} />
                 <Route path="produtos/:id" element={<AdminProductFormPage key="edit" />} />
+                <Route path="categorias" element={<AdminCategoriesPage />} />
             </Route>
 
             <Route path="*" element={<NotFoundPage />} />
