@@ -10,5 +10,9 @@ export function updateProfile(token: string, data: UpdateProfileRequest) {
 }
 
 export function changePassword(token: string, data: ChangePasswordRequest) {
-    return request<void>("/account/password", { method: "PATCH", body: data, token });
+    return request<{ accessToken: string }>("/account/password", {
+        method: "PATCH",
+        body: data,
+        token
+    });
 }

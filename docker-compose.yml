@@ -12,5 +12,16 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  # Caixa de e-mail de mentira para desenvolvimento: recebe os e-mails que a
+  # API manda (ex.: "Esqueci minha senha") sem enviar nada de verdade.
+  # Caixa de entrada: http://localhost:8025
+  mail:
+    image: axllent/mailpit:latest
+    container_name: florist-mail
+    restart: unless-stopped
+    ports:
+      - "${MAILPIT_SMTP_PORT:-1025}:1025"
+      - "${MAILPIT_UI_PORT:-8025}:8025"
+
 volumes:
   pgdata:

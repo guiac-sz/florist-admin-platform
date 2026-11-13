@@ -54,11 +54,30 @@ model User {
   passwordHash     String
   role             Role     @default(CUSTOMER)
   acceptsMarketing Boolean  @default(false)
+  /// Sobe 1 a cada troca de senha: tokens de login com o número antigo
+  /// deixam de valer (é assim que "encerramos as outras sessões").
+  sessionVersion   Int      @default(0)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   addresses        Address[]
+  passwordResets   PasswordResetToken[]
 
   @@map("users")
+}
+
+/// Links de "Esqueci minha senha". Guardamos só o hash do código (nunca o
+/// código em si): quem vê o banco não consegue usar os links.
+model PasswordResetToken {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("password_reset_tokens")
 }
 
 /// Endereços de entrega salvos pelo cliente.

@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, Patch, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import type { JwtPayload } from '../auth/auth.types';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -25,9 +25,11 @@ export class AccountController {
     return this.accountService.updateProfile(user.sub, dto);
   }
 
-  /** Troca a senha (pede a senha atual) */
+  /**
+   * Troca a senha (pede a senha atual). Encerra as sessões nos outros
+   * aparelhos e devolve um token novo para quem fez a troca.
+   */
   @Patch('password')
-  @HttpCode(204)
   changePassword(
     @CurrentUser() user: JwtPayload,
     @Body() dto: ChangePasswordDto,

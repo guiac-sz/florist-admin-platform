@@ -70,6 +70,9 @@ export default function LoginPage() {
                     "E-mail ou senha incorretos. Confira os dados e tente de novo."
                 );
                 setPassword("");
+            } else if (error instanceof ApiError && error.status === 429) {
+                // Muitas tentativas seguidas: a API bloqueia por um minuto.
+                setFormError("Muitas tentativas seguidas. Aguarde um minuto e tente de novo.");
             } else if (error instanceof ApiError && error.status === 400) {
                 setFormError(error.message);
             } else {

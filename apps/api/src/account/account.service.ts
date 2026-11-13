@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { toAuthUser } from '../auth/auth-user';
+import { AuthService } from '../auth/auth.service';
 import { hashPassword, verifyPassword } from '../auth/password';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
@@ -16,6 +17,7 @@ export class AccountService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly usersService: UsersService,
+    private readonly authService: AuthService,
   ) {}
 
   async updateProfile(userId: number, dto: UpdateProfileDto) {
@@ -65,10 +67,17 @@ export class AccountService {
       );
     }
 
-    await this.prisma.user.update({
+    // Trocar a senha encerra as sessões nos outros aparelhos (a versão sobe)
+    // e devolve um token novo para este aparelho continuar logado.
+    const updated = await this.prisma.user.update({
       where: { id: userId },
-      data: { passwordHash: await hashPassword(dto.newPassword) },
+      data: {
+        passwordHash: await hashPassword(dto.newPassword),
+        sessionVersion: { increment: 1 },
+      },
     });
+
+    return { accessToken: await this.authService.signToken(updated) };
   }
 
   private async findUserOrFail(userId: number) {

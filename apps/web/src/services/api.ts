@@ -13,6 +13,13 @@ interface ApiErrorBody {
     message?: string | string[];
 }
 
+/**
+ * Disparado quando a API recusa o token (401) de alguém que estava logado:
+ * a senha foi trocada em outro aparelho ou o token venceu. O AuthProvider
+ * ouve esse aviso e desloga, em vez de cada tela tratar isso sozinha.
+ */
+export const SESSION_ENDED_EVENT = "atelie-flora:session-ended";
+
 export class ApiError extends Error {
     readonly status: number;
 
@@ -58,6 +65,10 @@ export async function request<T>(
         const message = Array.isArray(errorBody?.message)
             ? errorBody.message.join(" ")
             : (errorBody?.message ?? `Erro ${response.status} ao acessar ${path}`);
+
+        if (response.status === 401 && token) {
+            window.dispatchEvent(new Event(SESSION_ENDED_EVENT));
+        }
 
         throw new ApiError(response.status, message);
     }

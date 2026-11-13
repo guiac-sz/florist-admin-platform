@@ -24,7 +24,7 @@ const emptyForm: PasswordForm = {
 };
 
 export default function SecurityPage() {
-    const { token } = useAuth();
+    const { token, updateToken } = useAuth();
 
     const [form, setForm] = useState<PasswordForm>(emptyForm);
     const [errors, setErrors] = useState<PasswordErrors>({});
@@ -77,14 +77,18 @@ export default function SecurityPage() {
         setIsSaving(true);
 
         try {
-            await changePassword(token, {
+            const { accessToken } = await changePassword(token, {
                 currentPassword: form.currentPassword,
                 newPassword: form.newPassword
             });
 
+            // A troca encerra as sessões antigas; este aparelho recebe um
+            // token novo para continuar logado.
+            updateToken(accessToken);
+
             // Limpa os campos: senha não deve ficar "parada" na tela.
             setForm(emptyForm);
-            setNotice("Senha atualizada. Use a nova senha no próximo login.");
+            setNotice("Senha atualizada. Encerramos as sessões abertas em outros aparelhos.");
         } catch (error) {
             if (error instanceof ApiError && error.message === "Senha atual incorreta.") {
                 setErrors({ currentPassword: error.message });

@@ -22,8 +22,10 @@ async function bootstrap() {
     }),
   );
 
+  // Endereço do site (front). Vem do .env para funcionar em outra porta
+  // ou, mais para frente, no domínio de verdade.
   app.enableCors({
-    origin: 'http://localhost:5173',
+    origin: process.env.WEB_URL ?? 'http://localhost:5173',
   });
 
   const swaggerConfig = new DocumentBuilder()

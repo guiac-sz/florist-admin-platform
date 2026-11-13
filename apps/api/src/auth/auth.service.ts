@@ -59,11 +59,20 @@ export class AuthService {
     return toAuthUser(user);
   }
 
-  private async createSession(user: User): Promise<AuthResponse> {
-    const payload: JwtPayload = { sub: user.id, role: user.role };
+  /** Cria um token de login com a "versão de sessão" atual do usuário. */
+  signToken(user: User): Promise<string> {
+    const payload: JwtPayload = {
+      sub: user.id,
+      role: user.role,
+      ver: user.sessionVersion,
+    };
 
+    return this.jwtService.signAsync(payload);
+  }
+
+  private async createSession(user: User): Promise<AuthResponse> {
     return {
-      accessToken: await this.jwtService.signAsync(payload),
+      accessToken: await this.signToken(user),
       user: toAuthUser(user),
     };
   }

@@ -31,16 +31,17 @@ export function saveSession(session: Session, remember: boolean) {
 }
 
 /**
- * Atualiza só os dados do usuário na sessão salva (ex.: depois de editar
- * "Meus dados"), mantendo o mesmo lugar: localStorage ou sessionStorage.
+ * Atualiza parte da sessão salva (o usuário depois de editar "Meus dados",
+ * ou o token depois de trocar a senha), mantendo o mesmo lugar:
+ * localStorage ou sessionStorage.
  */
-export function updateStoredUser(user: Session["user"]) {
+export function updateStoredSession(changes: Partial<Session>) {
     for (const storage of [localStorage, sessionStorage]) {
         const saved = readFrom(storage);
 
         if (saved) {
             try {
-                storage.setItem(STORAGE_KEY, JSON.stringify({ ...saved, user }));
+                storage.setItem(STORAGE_KEY, JSON.stringify({ ...saved, ...changes }));
             } catch {
                 // Sem armazenamento: vale só enquanto a página estiver aberta.
             }

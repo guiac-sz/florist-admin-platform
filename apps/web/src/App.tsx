@@ -15,6 +15,8 @@ import RequireAuth from "./components/RequireAuth/RequireAuth";
 import MyDataPage from "./pages/Account/MyDataPage";
 import SecurityPage from "./pages/Account/SecurityPage";
 import AddressesPage from "./pages/Account/AddressesPage";
+import ForgotPasswordPage from "./pages/PasswordReset/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/PasswordReset/ResetPasswordPage";
 import NotFoundPage from "./pages/NotFound/NotFoundPage";
 
 export default function App() {
@@ -41,6 +43,8 @@ export default function App() {
             <Route element={<AuthLayout />}>
                 <Route path="entrar" element={<LoginPage />} />
                 <Route path="criar-conta" element={<RegisterPage />} />
+                <Route path="esqueci-senha" element={<ForgotPasswordPage />} />
+                <Route path="criar-nova-senha" element={<ResetPasswordPage />} />
             </Route>
 
             <Route
