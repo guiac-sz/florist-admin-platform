@@ -49,6 +49,8 @@ model User {
   name             String
   email            String   @unique
   phone            String?
+  /// Só números. Opcional: usado na nota fiscal e no pagamento.
+  cpf              String?
   passwordHash     String
   role             Role     @default(CUSTOMER)
   acceptsMarketing Boolean  @default(false)

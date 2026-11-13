@@ -7,9 +7,10 @@ import {
     clearSession,
     loadSession,
     saveSession,
+    updateStoredUser,
     type Session
 } from "../services/session";
-import type { LoginRequest, RegisterRequest } from "../types/auth";
+import type { AuthUser, LoginRequest, RegisterRequest } from "../types/auth";
 
 interface AuthProviderProps {
     children: ReactNode;
@@ -65,13 +66,20 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         setSession(null);
     }
 
+    // Depois de editar "Meus dados", o cabeçalho e o menu já mostram o nome novo.
+    function updateUser(user: AuthUser) {
+        updateStoredUser(user);
+        setSession((current) => (current ? { ...current, user } : current));
+    }
+
     const value: AuthContextValue = {
         user: session?.user ?? null,
         token: session?.accessToken ?? null,
         isAuthenticated: session !== null,
         signIn,
         signUp,
-        signOut
+        signOut,
+        updateUser
     };
 
     return <AuthContext value={value}>{children}</AuthContext>;

@@ -30,6 +30,26 @@ export function saveSession(session: Session, remember: boolean) {
     }
 }
 
+/**
+ * Atualiza só os dados do usuário na sessão salva (ex.: depois de editar
+ * "Meus dados"), mantendo o mesmo lugar: localStorage ou sessionStorage.
+ */
+export function updateStoredUser(user: Session["user"]) {
+    for (const storage of [localStorage, sessionStorage]) {
+        const saved = readFrom(storage);
+
+        if (saved) {
+            try {
+                storage.setItem(STORAGE_KEY, JSON.stringify({ ...saved, user }));
+            } catch {
+                // Sem armazenamento: vale só enquanto a página estiver aberta.
+            }
+
+            return;
+        }
+    }
+}
+
 export function clearSession() {
     try {
         localStorage.removeItem(STORAGE_KEY);

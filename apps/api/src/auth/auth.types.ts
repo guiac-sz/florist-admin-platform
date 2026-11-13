@@ -10,6 +10,8 @@ export interface AuthUser {
   name: string;
   email: string;
   phone: string | null;
+  cpf: string | null;
+  acceptsMarketing: boolean;
   role: Role;
 }
 

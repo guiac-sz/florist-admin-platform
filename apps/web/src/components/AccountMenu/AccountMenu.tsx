@@ -1,12 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router";
+import { startTransition, useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router";
 
 import {
     ChevronDownIcon,
     GridIcon,
+    LockIcon,
     LogOutIcon,
-    MapPinIcon,
-    PackageIcon,
     UserIcon
 } from "../Icons/Icons";
 import { useAuth } from "../../hooks/useAuth";
@@ -21,6 +20,7 @@ function getRoleLabel(user: AuthUser) {
 
 export default function AccountMenu() {
     const { user, signOut } = useAuth();
+    const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
@@ -62,7 +62,13 @@ export default function AccountMenu() {
 
     function handleSignOut() {
         closeMenu();
-        signOut();
+
+        // Volta para a loja junto com o logout (mesma ideia do AccountLayout):
+        // assim quem sai de "Minha conta" não cai na tela de login.
+        startTransition(() => {
+            navigate("/");
+            signOut();
+        });
     }
 
     return (
@@ -101,19 +107,14 @@ export default function AccountMenu() {
                             </Link>
                         )}
 
-                        <Link to="/minha-conta/pedidos" onClick={closeMenu}>
-                            <PackageIcon size={16} />
-                            Meus pedidos
-                        </Link>
-
                         <Link to="/minha-conta/dados" onClick={closeMenu}>
                             <UserIcon size={16} />
                             Meus dados
                         </Link>
 
-                        <Link to="/minha-conta/enderecos" onClick={closeMenu}>
-                            <MapPinIcon size={16} />
-                            Endereços
+                        <Link to="/minha-conta/seguranca" onClick={closeMenu}>
+                            <LockIcon size={16} />
+                            Senha e segurança
                         </Link>
 
                         <button

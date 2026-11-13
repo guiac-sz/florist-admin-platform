@@ -79,9 +79,11 @@ export default function Header({
                 Flores frescas todos os dias
             </div>
 
+            {/* Os links usam "/#secao" (e não só "#secao") para funcionarem também
+                fora da página inicial, como em "Minha conta". */}
             <header className="main-header">
                 <a
-                    href="#inicio"
+                    href="/#inicio"
                     className="brand"
                     onClick={closeMenu}
                 >
@@ -97,7 +99,7 @@ export default function Header({
                     }`}
                 >
                     <a
-                        href="#inicio"
+                        href="/#inicio"
                         className={getLinkClass("inicio")}
                         onClick={closeMenu}
                     >
@@ -105,7 +107,7 @@ export default function Header({
                     </a>
 
                     <a
-                        href="#catalogo"
+                        href="/#catalogo"
                         className={getLinkClass("catalogo")}
                         onClick={closeMenu}
                     >
@@ -113,7 +115,7 @@ export default function Header({
                     </a>
 
                     <a
-                        href="#sobre"
+                        href="/#sobre"
                         className={getLinkClass("sobre")}
                         onClick={closeMenu}
                     >
@@ -121,7 +123,7 @@ export default function Header({
                     </a>
 
                     <a
-                        href="#localizacao"
+                        href="/#localizacao"
                         className={getLinkClass(
                             "localizacao"
                         )}
@@ -131,7 +133,7 @@ export default function Header({
                     </a>
 
                     <a
-                        href="#contato"
+                        href="/#contato"
                         className={getLinkClass("contato")}
                         onClick={closeMenu}
                     >

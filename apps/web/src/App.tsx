@@ -10,6 +10,10 @@ import RegisterPage from "./pages/Register/RegisterPage";
 import AdminProductsPage from "./pages/Admin/AdminProductsPage";
 import AdminProductFormPage from "./pages/Admin/AdminProductFormPage";
 import AdminCategoriesPage from "./pages/Admin/AdminCategoriesPage";
+import AccountLayout from "./layouts/AccountLayout";
+import RequireAuth from "./components/RequireAuth/RequireAuth";
+import MyDataPage from "./pages/Account/MyDataPage";
+import SecurityPage from "./pages/Account/SecurityPage";
 import NotFoundPage from "./pages/NotFound/NotFoundPage";
 
 export default function App() {
@@ -17,6 +21,19 @@ export default function App() {
         <Routes>
             <Route element={<StoreLayout />}>
                 <Route index element={<Home />} />
+
+                <Route
+                    path="minha-conta"
+                    element={
+                        <RequireAuth>
+                            <AccountLayout />
+                        </RequireAuth>
+                    }
+                >
+                    <Route index element={<Navigate to="dados" replace />} />
+                    <Route path="dados" element={<MyDataPage />} />
+                    <Route path="seguranca" element={<SecurityPage />} />
+                </Route>
             </Route>
 
             <Route element={<AuthLayout />}>

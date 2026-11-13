@@ -4,14 +4,13 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { compare, hash } from 'bcryptjs';
 import type { User } from '../generated/prisma/client';
 import { UsersService } from '../users/users.service';
+import { toAuthUser } from './auth-user';
+import type { AuthResponse, AuthUser, JwtPayload } from './auth.types';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import type { AuthResponse, AuthUser, JwtPayload } from './auth.types';
-
-const PASSWORD_SALT_ROUNDS = 10;
+import { hashPassword, verifyPassword } from './password';
 
 @Injectable()
 export class AuthService {
@@ -31,7 +30,7 @@ export class AuthService {
       name: dto.name,
       email: dto.email,
       phone: dto.phone,
-      passwordHash: await hash(dto.password, PASSWORD_SALT_ROUNDS),
+      passwordHash: await hashPassword(dto.password),
       acceptsMarketing: dto.acceptsMarketing ?? false,
     });
 
@@ -41,7 +40,7 @@ export class AuthService {
   async login(dto: LoginDto): Promise<AuthResponse> {
     const user = await this.usersService.findByEmail(dto.email);
     const isPasswordValid =
-      user !== null && (await compare(dto.password, user.passwordHash));
+      user !== null && (await verifyPassword(dto.password, user.passwordHash));
 
     if (!user || !isPasswordValid) {
       throw new UnauthorizedException('E-mail ou senha incorretos.');
@@ -57,7 +56,7 @@ export class AuthService {
       throw new UnauthorizedException('Sessão inválida. Entre novamente.');
     }
 
-    return this.toAuthUser(user);
+    return toAuthUser(user);
   }
 
   private async createSession(user: User): Promise<AuthResponse> {
@@ -65,17 +64,7 @@ export class AuthService {
 
     return {
       accessToken: await this.jwtService.signAsync(payload),
-      user: this.toAuthUser(user),
-    };
-  }
-
-  private toAuthUser(user: User): AuthUser {
-    return {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      role: user.role,
+      user: toAuthUser(user),
     };
   }
 }
