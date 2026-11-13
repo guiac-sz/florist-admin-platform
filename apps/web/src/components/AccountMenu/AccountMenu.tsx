@@ -6,6 +6,7 @@ import {
     GridIcon,
     LockIcon,
     LogOutIcon,
+    MapPinIcon,
     UserIcon
 } from "../Icons/Icons";
 import { useAuth } from "../../hooks/useAuth";
@@ -110,6 +111,11 @@ export default function AccountMenu() {
                         <Link to="/minha-conta/dados" onClick={closeMenu}>
                             <UserIcon size={16} />
                             Meus dados
+                        </Link>
+
+                        <Link to="/minha-conta/enderecos" onClick={closeMenu}>
+                            <MapPinIcon size={16} />
+                            Endereços
                         </Link>
 
                         <Link to="/minha-conta/seguranca" onClick={closeMenu}>

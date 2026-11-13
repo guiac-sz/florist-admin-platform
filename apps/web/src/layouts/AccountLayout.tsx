@@ -61,11 +61,10 @@ export default function AccountLayout() {
                         Meus dados
                     </NavLink>
 
-                    <span className="account-nav-item is-disabled">
+                    <NavLink to="/minha-conta/enderecos" className="account-nav-item">
                         <MapPinIcon size={18} />
                         Endereços
-                        <em>em breve</em>
-                    </span>
+                    </NavLink>
 
                     <NavLink to="/minha-conta/seguranca" className="account-nav-item">
                         <LockIcon size={18} />

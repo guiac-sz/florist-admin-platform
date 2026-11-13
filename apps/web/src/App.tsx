@@ -14,6 +14,7 @@ import AccountLayout from "./layouts/AccountLayout";
 import RequireAuth from "./components/RequireAuth/RequireAuth";
 import MyDataPage from "./pages/Account/MyDataPage";
 import SecurityPage from "./pages/Account/SecurityPage";
+import AddressesPage from "./pages/Account/AddressesPage";
 import NotFoundPage from "./pages/NotFound/NotFoundPage";
 
 export default function App() {
@@ -32,6 +33,7 @@ export default function App() {
                 >
                     <Route index element={<Navigate to="dados" replace />} />
                     <Route path="dados" element={<MyDataPage />} />
+                    <Route path="enderecos" element={<AddressesPage />} />
                     <Route path="seguranca" element={<SecurityPage />} />
                 </Route>
             </Route>

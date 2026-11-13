@@ -1,10 +1,12 @@
-import { useId, type InputHTMLAttributes } from "react";
+import { useId, type ComponentProps } from "react";
 
 import FieldError from "./FieldError";
 
 import "./Form.css";
 
-interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
+// ComponentProps<"input"> inclui o "ref": no React 19 ele é uma prop comum,
+// então quem usa o TextField pode pegar o <input> (ex.: para dar foco).
+interface TextFieldProps extends ComponentProps<"input"> {
     label: string;
     error?: string;
 }

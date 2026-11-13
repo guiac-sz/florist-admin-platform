@@ -56,6 +56,35 @@ model User {
   acceptsMarketing Boolean  @default(false)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+  addresses        Address[]
 
   @@map("users")
+}
+
+/// Endereços de entrega salvos pelo cliente.
+model Address {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  /// Apelido para reconhecer: Casa, Trabalho, Casa da mãe...
+  label        String
+  /// CEP só com números (8 dígitos)
+  zipCode      String
+  street       String
+  /// Texto, e não número: aceita "s/n" e "120A"
+  number       String
+  complement   String?
+  neighborhood String
+  city         String
+  /// Sigla do estado: SP, RJ...
+  state        String
+  /// Ponto de referência para o entregador
+  reference    String?
+  isDefault    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  // onDelete: Cascade → se a conta for excluída, os endereços vão junto.
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("addresses")
 }
